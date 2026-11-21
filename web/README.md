@@ -1,6 +1,6 @@
 # Oddmouth web
 
-A minimal Next.js App Router frontend for Oddmouth. Tagline: **Small model. Big mouth.**
+A minimal black-and-white, single-screen Next.js App Router frontend for Oddmouth. Tagline: **Small model. Big mouth.**
 
 ## Develop
 
@@ -16,6 +16,10 @@ Open http://localhost:3000. For production, run `npm run build`; the static site
 
 - Editable text, a 1,000-character input limit, character count, and reset.
 - A bundled five-second WAV, play/pause, seeking, replay, and download.
+- A vector face based on the supplied logo reference, with discrete mouth poses driven by audio playback time. Pausing freezes the pose, seeking changes it, and reset returns the smile. These expressions are illustrative, not phoneme-aligned enunciation guidance.
+- Reduced-motion preferences show the static logo instead.
+- An accessible native About dialog, dismissible with its close button, Escape, or the backdrop.
+- A 100svh shell keeps the navbar and footer in one viewport. The central workspace can scroll internally on unusually short screens or at high text zoom.
 - Editing the text does not synthesize audio. The sample is always identified as a prerecorded demo. No model, inference endpoint, analytics, or external font requests are included.
 - Text stays only in page memory and is cleared on refresh. The 1,000-character limit is a UI placeholder, not a model constraint.
 

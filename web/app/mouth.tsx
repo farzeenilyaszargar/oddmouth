@@ -1,0 +1,10 @@
+type MouthProps = { pose?: 'smile' | 'wide' | 'round' | 'closed' | 'teeth'; className?: string };
+
+// Original vector tracing of the supplied three-tooth face, with illustrative
+// speaking poses. These poses are not phoneme-aligned pronunciation guidance.
+export default function Mouth({ pose = 'smile', className = '' }: MouthProps) {
+  return <svg className={`mouth ${className}`} viewBox="0 0 320 200" fill="none" aria-hidden="true">
+    <g className="eyes"><circle cx="76" cy="35" r="16" fill="currentColor" /><circle cx="244" cy="35" r="16" fill="currentColor" /></g>
+    {pose === 'closed' ? <path d="M24 102Q152 176 296 102" stroke="currentColor" strokeWidth="12" strokeLinecap="round" /> : pose === 'round' ? <g><path d="M114 81C114 59 206 59 206 81C234 122 204 188 160 188C116 188 86 122 114 81Z" fill="currentColor" /><path d="M132 77Q160 69 188 77L185 98Q160 107 135 98Z" fill="white" /><path d="M132 163Q160 140 188 163Q162 188 132 163Z" fill="white" /></g> : pose === 'wide' ? <g><path d="M20 91C16 54 83 76 160 85C237 76 304 54 300 91C314 161 225 196 160 194C95 196 6 161 20 91Z" fill="currentColor" /><path d="M60 82L112 92Q110 126 84 122Q58 118 60 82ZM125 94Q160 100 195 94Q196 135 160 135Q124 135 125 94ZM208 92L260 82Q262 118 236 122Q210 126 208 92Z" fill="white" /><path d="M106 175Q158 139 214 175Q164 197 106 175Z" fill="white" /><path d="M159 158L161 175" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></g> : pose === 'teeth' ? <g><path d="M21 92Q28 61 100 80Q160 99 220 80Q292 61 299 92Q312 157 160 176Q8 157 21 92Z" fill="currentColor" /><path d="M51 89Q160 125 269 89L260 127Q160 164 60 127Z" fill="white" /><path d="M104 103L103 143M158 110V150M215 103L216 143M56 113Q160 145 264 113" stroke="currentColor" strokeWidth="5" /></g> : <g><path d="M20 93C12 51 76 77 128 84Q160 91 192 84C244 77 308 51 300 93C312 150 225 190 160 190C95 190 8 150 20 93Z" fill="currentColor" /><path d="M60 82L120 92C119 130 59 134 60 82ZM130 94Q160 100 190 94C194 140 126 140 130 94ZM200 92L260 82C261 134 201 130 200 92Z" fill="white" /></g>}
+  </svg>;
+}

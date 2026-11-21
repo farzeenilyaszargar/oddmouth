@@ -55,16 +55,16 @@ export default function Home() {
 
       <main>
         <div className="workspace">
-          <div className="intro"><h1>Free text to speech. Try the demo.</h1></div>
+          <div className="hero"><div className="intro"><h1>Free text to speech.<span>Try the demo.</span></h1></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
             <SpeakingMouth audio={audio} playing={playing} time={time} duration={duration} editing={editing} /><Mouth className="still-mouth" />
-          </div>
+          </div></div>
 
           <section className="studio" aria-label="Text to speech demo">
             <div className="editor">
               <div className="editor-top"><label htmlFor="words">Your words</label><span>Demo</span></div>
               <textarea onFocus={() => setEditing(true)} onBlur={() => setEditing(false)} id="words" value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder="Give me something to say." spellCheck={false} />
-              <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><div className="editor-actions"><button className="text-button" onClick={reset}>Reset sample</button><button className="generate-button" onClick={generateDemo} disabled={!text.trim()} aria-describedby="demo-note">Generate demo</button></div></div>
+              <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><div className="editor-actions"><button className="text-button" onClick={reset}>Reset sample</button><button className="generate-button" onClick={generateDemo} disabled={!text.trim()} aria-describedby="demo-note"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M3 8v4m5-8v12m5-10v8m4-6v4" /></svg>Generate demo</button></div></div>
             </div>
             <div className="player">
               <button className="play" onClick={playPause} aria-label={playing ? 'Pause demo' : 'Play demo'}>

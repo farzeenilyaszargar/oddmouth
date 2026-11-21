@@ -16,7 +16,7 @@ Open http://localhost:3000. For production, run `npm run build`; the static site
 
 - Editable text, a 1,000-character input limit, character count, and reset.
 - A black Generate demo button restarts and plays the prerecorded sample. It does not synthesize the entered text and is disabled when the input is blank.
-- A compact character and a concise introductory heading keep the editor near the top of the page.
+- A compact character and a concise introductory heading share a row to keep the editor near the top of the page.
 - A bundled five-second WAV, play/pause, seeking, replay, and download.
 - A vector face with eight sound-specific mouth poses, driven by audio-aligned cues extracted from the recording with Rhubarb Lip Sync. Pausing freezes the pose, seeking selects the matching sound, and silence/reset returns the smile. Alignment is automatic and approximate, not validated pronunciation instruction.
 - The eyes follow the pointer across the page, including during speech. The idle animation is a small grin tilt and a quick wink, followed by a quiet pause. It uses a smooth eight-second CSS loop, with no protruding mouth artwork or timed pose swaps. Focusing the editor stops idle expressions, and speech or paused speech cues take priority. Pointer listeners and playback animation frames are cleaned up on unmount; the idle animation needs no JavaScript timer.
@@ -71,3 +71,7 @@ The share image source is `public/social-card.svg`; its PNG is used for link pre
 ```sh
 node --input-type=module -e "import sharp from 'sharp'; await sharp('public/social-card.svg').png().toFile('public/social-card.png')"
 ```
+
+## Typography
+
+The interface uses locally bundled Baloo 2 for the wordmark, headings, and primary action, with Nunito for editing and controls. The fonts come from the `@fontsource-variable/baloo-2` and `@fontsource-variable/nunito` packages, with licenses included in those packages. `next/font/local` serves and preloads the Latin WOFF2 subsets, so loading the page does not contact a font CDN.

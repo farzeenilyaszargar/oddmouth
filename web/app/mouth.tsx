@@ -3,7 +3,7 @@ import type { MouthPose } from './lib/lip-sync';
 type MouthProps = { pose?: MouthPose; className?: string };
 
 // Original vector artwork based on the supplied three-tooth face. The sound
-// groups follow Rhubarb's A–H/X convention; recognition remains approximate.
+// groups follow Rhubarb's A-H/X convention; recognition remains approximate.
 export default function Mouth({ pose = 'smile', className = '' }: MouthProps) {
   const teeth = <path d="M60 82L120 92C119 130 59 134 60 82ZM130 94Q160 100 190 94C194 140 126 140 130 94ZM200 92L260 82C261 134 201 130 200 92Z" fill="white" />;
   const expressions = {

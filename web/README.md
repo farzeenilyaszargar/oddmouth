@@ -19,7 +19,7 @@ Open http://localhost:3000. For production, run `npm run build`; the static site
 - A vector face with nine sound-specific mouth poses, driven by audio-aligned cues extracted from the recording with Rhubarb Lip Sync. Pausing freezes the pose, seeking selects the matching sound, and silence/reset returns the smile. Alignment is automatic and approximate, not validated pronunciation instruction.
 - Reduced-motion preferences show the static logo instead.
 - An accessible native About dialog, dismissible with its close button, Escape, or the backdrop.
-- A 100svh shell keeps the navbar and footer in one viewport. The central workspace can scroll internally on unusually short screens or at high text zoom.
+- A 100svh shell keeps the navbar and workspace in one viewport. The central workspace can scroll internally on unusually short screens or at high text zoom.
 - Editing the text does not synthesize audio. The sample is always identified as a prerecorded demo. No model, inference endpoint, analytics, or external font requests are included.
 - Text stays only in page memory and is cleared on refresh. The 1,000-character limit is a UI placeholder, not a model constraint.
 
@@ -42,7 +42,7 @@ Output: mono PCM WAV, 22,050 Hz, exactly five seconds including trailing silence
 
 `demo/lip-sync.json` contains 38 timestamped mouth cues extracted from the actual demo WAV with [Rhubarb Lip Sync 1.14.0](https://github.com/DanielSWolf/rhubarb-lip-sync/releases/tag/v1.14.0), using its English PocketSphinx recognizer and the exact transcript in `demo/transcript.txt`. The file records the audio SHA-256 so changed recordings cannot silently reuse old timings.
 
-The A–H/X cues drive nine vector expressions: closed lips, clenched teeth, open, wide open, rounded, puckered, teeth on the lip, raised tongue, and resting smile. The animation reads the media clock on each animation frame and renders only when the pose changes. It does not use a repeating animation timer. Reduced-motion preferences retain the static face.
+The A-H/X cues drive nine vector expressions: closed lips, clenched teeth, open, wide open, rounded, puckered, teeth on the lip, raised tongue, and resting smile. The animation reads the media clock on each animation frame and renders only when the pose changes. It does not use a repeating animation timer. Reduced-motion preferences retain the static face.
 
 To regenerate, download and extract the official Rhubarb release outside the repository, then run from `web/`:
 
@@ -56,3 +56,15 @@ The generator reads only the bundled fixture and transcript, strips machine-spec
 ## Model integration
 
 Connect an actual inference pipeline before presenting custom speech generation. Keep the current demo label until the player receives audio synthesized from the submitted text. New generated recordings must include their own timing cues (from inference phoneme timing or a separate alignment step); the current cues apply only to the demo WAV. Model weights, bulk audio, and checkpoints belong in artifact storage, not this frontend or ordinary Git.
+
+## Search and sharing
+
+The page includes a descriptive title, description, Open Graph and Twitter cards, a 1200 x 630 share image, an explicit icon, and WebSite structured data. The copy describes the current demo rather than claiming that custom generation is available.
+
+Set `SITE_URL` to the final public origin before the production build. This adds the canonical URL and a one-page sitemap and enables crawling. For private staging, set `SITE_INDEXABLE=false`. With no configured public URL, localhost and preview builds use `noindex`, block crawling in `robots.txt`, and return an empty sitemap. Private hosting must also be made public before search engines can access it. Metadata cannot guarantee search rankings.
+
+The share image source is `public/social-card.svg`; its PNG is used for link previews. To regenerate the PNG using the installed Sharp dependency, run from `web/`:
+
+```sh
+node --input-type=module -e "import sharp from 'sharp'; await sharp('public/social-card.svg').png().toFile('public/social-card.png')"
+```

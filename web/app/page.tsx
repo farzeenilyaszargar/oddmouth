@@ -45,10 +45,9 @@ export default function Home() {
 
       <main>
         <div className="workspace">
-          <div className="intro"><h1>Small model. Big mouth.</h1><p>Free text to speech. A voice for everyone.</p></div>
+          <div className="intro"><h1>Small model. Big mouth.</h1><p>Free text to speech.</p></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
             <SpeakingMouth audio={audio} playing={playing} time={time} /><Mouth className="still-mouth" />
-            <span className="character-caption">{playing ? 'A little odd. A lot to say.' : 'Go on. Make me talk.'}</span>
           </div>
 
           <section className="studio" aria-label="Text to speech demo">
@@ -66,17 +65,16 @@ export default function Home() {
             </div>
             <audio ref={audio} src="/audio/oddmouth-demo.wav" preload="metadata" onPlay={() => setPlaying(true)} onPause={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onEnded={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onTimeUpdate={event => setTime(event.currentTarget.currentTime)} onLoadedMetadata={event => { if (Number.isFinite(event.currentTarget.duration)) setDuration(event.currentTarget.duration); }} onError={() => setError('The sample couldn’t load. Please refresh and try again.')} />
           </section>
-          <p className="demo-note" role="status">{error || (edited ? 'Your text is ready. Custom voice generation is coming soon.' : 'A five-second sample. The Oddmouth voice is on its way.')}</p>
+          <p className="demo-note" role="status">{error || (edited ? 'Custom speech generation is not available yet.' : 'Demo recording. 5 seconds.')}</p>
         </div>
       </main>
 
-      <footer><span>No sign-up. No paywall.</span><a href="https://github.com/farzeenilyaszargar/oddmouth" target="_blank" rel="noreferrer">Made for everyone.</a></footer>
       <dialog ref={about} className="about-dialog" aria-labelledby="about-title" onClick={event => { if (event.target === about.current) about.current?.close(); }}>
         <div className="dialog-top"><Mouth /><button aria-label="Close about" onClick={() => about.current?.close()}>✕</button></div>
-        <h2 id="about-title">A little odd.<br />A lot to say.</h2>
-        <p>Oddmouth is building a small, free text-to-speech model for everyone. Simple words in. A voice out. No sign-up, no paywall.</p>
-        <p>For now, this is an interactive demo with a pre-recorded sample. The mouth shapes follow sounds detected in the recording, including rounded vowels, closed lips, and pauses. The lip sync is approximate, not pronunciation instruction.</p>
-        <a href="https://github.com/farzeenilyaszargar/oddmouth" target="_blank" rel="noreferrer">Follow the build on GitHub</a>
+        <h2 id="about-title">About Oddmouth</h2>
+        <p>Oddmouth is a free text-to-speech project. This demo plays a prerecorded sample. Custom speech generation is not connected yet.</p>
+        <p>The mouth follows sounds detected in the recording. Its timing is approximate.</p>
+        <a href="https://github.com/farzeenilyaszargar/oddmouth" target="_blank" rel="noreferrer">Source code on GitHub</a>
       </dialog>
     </div>
   );

@@ -220,3 +220,6 @@ textarea::placeholder { color: #aaa; }
 .training-review select { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; }
 .training-review > p { color: #555; font-size: 15px; line-height: 1.5; }
 .training-review .player audio { width: 100%; min-width: 0; flex: 1; }
+
+.about-dialog .maker { margin-top: 23px; color: var(--ink); }
+.about-dialog .maker a { display: inline; margin: 0; font-size: inherit; }

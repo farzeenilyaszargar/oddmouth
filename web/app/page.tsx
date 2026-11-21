@@ -74,8 +74,10 @@ export default function Home() {
       <dialog ref={about} className="about-dialog" aria-labelledby="about-title" onClick={event => { if (event.target === about.current) about.current?.close(); }}>
         <div className="dialog-top"><Mouth /><button aria-label="Close about" onClick={() => about.current?.close()}>✕</button></div>
         <h2 id="about-title">About Oddmouth</h2>
-        <p>Oddmouth is a free text-to-speech project. This demo plays a prerecorded sample. Custom speech generation is not connected yet.</p>
-        <p>The mouth follows sounds detected in the recording. Its timing is approximate.</p>
+        <p>Oddmouth is a free, open-source text-to-speech project. The goal is to generate speech directly in this website, using your device instead of an inference server.</p>
+        <p>After the model downloads, the aim is to let you generate speech offline, keep your text on your device, and avoid API keys, accounts, and character quotas.</p>
+        <p>In-browser generation is still in development. This page currently plays a prerecorded sample with speech-synced mouth animation.</p>
+        <p className="maker">Made by <a href="https://twitter.com/farilyaz" target="_blank" rel="noreferrer">@farilyaz</a>.</p>
         <a href="https://github.com/farzeenilyaszargar/oddmouth" target="_blank" rel="noreferrer">Source code on GitHub</a>
       </dialog>
     </div>

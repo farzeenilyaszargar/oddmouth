@@ -16,8 +16,8 @@ Open http://localhost:3000. For production, run `npm run build`; the static site
 
 - Editable text, a 1,000-character input limit, character count, and reset.
 - A bundled five-second WAV, play/pause, seeking, replay, and download.
-- A vector face with nine sound-specific mouth poses, driven by audio-aligned cues extracted from the recording with Rhubarb Lip Sync. Pausing freezes the pose, seeking selects the matching sound, and silence/reset returns the smile. Alignment is automatic and approximate, not validated pronunciation instruction.
-- The eyes follow the pointer across the page, including during speech. The idle gesture smoothly pulls into a crooked grin, squints one eye, extends and wiggles a tongue below the mouth, then retracts it. It uses a continuous nine-second SVG and CSS animation rather than timed swaps between speech poses. Focusing the editor stops idle expressions, and speech or paused speech cues take priority. Pointer listeners and playback animation frames are cleaned up on unmount; the idle animation needs no JavaScript timer.
+- A vector face with eight sound-specific mouth poses, driven by audio-aligned cues extracted from the recording with Rhubarb Lip Sync. Pausing freezes the pose, seeking selects the matching sound, and silence/reset returns the smile. Alignment is automatic and approximate, not validated pronunciation instruction.
+- The eyes follow the pointer across the page, including during speech. The idle animation is a small grin tilt and a quick wink, followed by a quiet pause. It uses a smooth eight-second CSS loop, with no protruding mouth artwork or timed pose swaps. Focusing the editor stops idle expressions, and speech or paused speech cues take priority. Pointer listeners and playback animation frames are cleaned up on unmount; the idle animation needs no JavaScript timer.
 - Reduced-motion preferences show the static logo instead.
 - An accessible native About dialog, dismissible with its close button, Escape, or the backdrop.
 - A 100svh shell keeps the navbar and workspace in one viewport. The central workspace can scroll internally on unusually short screens or at high text zoom.
@@ -43,7 +43,7 @@ Output: mono PCM WAV, 22,050 Hz, exactly five seconds including trailing silence
 
 `demo/lip-sync.json` contains 38 timestamped mouth cues extracted from the actual demo WAV with [Rhubarb Lip Sync 1.14.0](https://github.com/DanielSWolf/rhubarb-lip-sync/releases/tag/v1.14.0), using its English PocketSphinx recognizer and the exact transcript in `demo/transcript.txt`. The file records the audio SHA-256 so changed recordings cannot silently reuse old timings.
 
-The A-H/X cues drive nine vector expressions: closed lips, clenched teeth, open, wide open, rounded, puckered, teeth on the lip, raised tongue, and resting smile. The animation reads the media clock on each animation frame and renders only when the pose changes. It does not use a repeating animation timer. Reduced-motion preferences retain the static face.
+The A-H/X cues drive eight vector expressions: closed lips, clenched teeth, open, wide open, rounded, puckered, teeth on the lip, and resting smile. H uses the open-mouth drawing. The animation reads the media clock on each animation frame and renders only when the pose changes. It does not use a repeating animation timer. Reduced-motion preferences retain the static face.
 
 To regenerate, download and extract the official Rhubarb release outside the repository, then run from `web/`:
 

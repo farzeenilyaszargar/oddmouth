@@ -1,10 +1,10 @@
-export type MouthPose = 'smile' | 'smirk' | 'closed' | 'teeth' | 'open' | 'wide' | 'round' | 'pucker' | 'bite' | 'tongue';
+export type MouthPose = 'smile' | 'closed' | 'teeth' | 'open' | 'wide' | 'round' | 'pucker' | 'bite';
 export type MouthCue = { start: number; end: number; value: string };
 
 // Rhubarb's sound groups, mapped to this character's original vector artwork.
 const poses: Record<string, MouthPose> = {
   A: 'closed', B: 'teeth', C: 'open', D: 'wide', E: 'round',
-  F: 'pucker', G: 'bite', H: 'tongue', X: 'smile',
+  F: 'pucker', G: 'bite', H: 'open', X: 'smile',
 };
 
 export function mouthPoseAt(cues: readonly MouthCue[], seconds: number): MouthPose {

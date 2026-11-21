@@ -23,7 +23,7 @@ test('cue data belongs to the bundled audio, covers it, and contains all sound g
 test('speech sounds map to distinct poses at their actual times', () => {
   assert.equal(mouthPoseAt(data.mouthCues, .22), 'closed'); // M in “some”
   assert.equal(mouthPoseAt(data.mouthCues, .31), 'pucker'); // W in “words”
-  assert.equal(mouthPoseAt(data.mouthCues, 1.25), 'tongue'); // L in “loud”
+  assert.equal(mouthPoseAt(data.mouthCues, 1.25), 'open'); // L in “loud”
   assert.equal(mouthPoseAt(data.mouthCues, 2.13), 'bite'); // V in “give”
   assert.equal(mouthPoseAt(data.mouthCues, .63), 'wide');
   assert.equal(mouthPoseAt(data.mouthCues, .36), 'round');

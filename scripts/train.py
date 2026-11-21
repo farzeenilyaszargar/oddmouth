@@ -14,6 +14,7 @@ import math
 import os
 from pathlib import Path
 import random
+import signal
 import shutil
 import sys
 import time
@@ -102,6 +103,15 @@ def main():
     parser.add_argument('--cpu-share', type=float, default=None, help='Target CPU share, up to 0.30 (default: 0.25)')
     parser.add_argument('--profile', action='store_true', help='Break down setup and synchronized step timings')
     args = parser.parse_args()
+
+    stopping = False
+
+    def request_stop(signum, frame):
+        nonlocal stopping
+        stopping = True
+
+    signal.signal(signal.SIGINT, request_stop)
+    signal.signal(signal.SIGTERM, request_stop)
 
     cfg = json.loads(args.config.read_text())
     stage_cfg, arch = cfg['training'][args.stage], cfg['architecture']
@@ -238,7 +248,7 @@ def main():
     logged_from_step = step
     totals = {}
     try:
-        while step < stop_step:
+        while step < stop_step and not stopping:
             if args.minutes and time.monotonic() - began > args.minutes * 60:
                 break
             timings = {}
@@ -332,7 +342,7 @@ def main():
                 with (run / 'metrics.jsonl').open('a') as log:
                     log.write(json.dumps(row) + '\n')
                 print(json.dumps(row), flush=True)
-            if step % args.eval_every == 0:
+            if not stopping and step % args.eval_every == 0:
                 result = {'step': step, **evaluate()}
                 with (run / 'metrics.jsonl').open('a') as log:
                     log.write(json.dumps(result) + '\n')
@@ -342,6 +352,8 @@ def main():
                 last_save = time.monotonic()
     except KeyboardInterrupt:
         print('interrupted; saving checkpoint', flush=True)
+    if stopping:
+        print('Stop requested; saving at the update boundary', flush=True)
     checkpoint()
     elapsed = time.monotonic() - began
     print(json.dumps({'saved': str(ckpt_path), 'step': step, 'elapsed_minutes': elapsed / 60}), flush=True)

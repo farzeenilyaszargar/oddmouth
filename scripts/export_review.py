@@ -27,6 +27,8 @@ def main():
     parser.add_argument('--data', type=Path, default=ROOT / 'data/dailytalk')
     parser.add_argument('--stage', choices=['vocoder', 'acoustic'], required=True)
     parser.add_argument('--vocoder', type=Path, default=ROOT / 'runs/vocoder/last.pt')
+    parser.add_argument('--pair-id', action='store_true',
+                        help='Include the vocoder step in the ID for an acoustic review')
     args = parser.parse_args()
     config = json.loads((ROOT / 'configs/oddmouth.json').read_text())
     limit_threads(config['cpu_share'])
@@ -47,6 +49,8 @@ def main():
     if not re.fullmatch(r'[a-zA-Z0-9_-]+', run_name):
         raise ValueError('Run name must use letters, digits, dashes or underscores')
     key = f'{args.stage}-{run_name}-{step:07d}'
+    if args.pair_id and args.stage == 'acoustic':
+        key += f'-v{vocoder_step:07d}'
     output = ROOT / 'outputs/training-review'
     output.mkdir(parents=True, exist_ok=True)
     index_path = output / 'index.json'
@@ -78,7 +82,7 @@ def main():
         index_tmp = folder / 'index.json'
         index_tmp.write_text(json.dumps([review, *reviews], indent=2) + '\n')
         os.replace(index_tmp, index_path)
-    print(f'Saved {len(clips)} listening pairs for {key}')
+    print(json.dumps({'review_id': key, 'clips': len(clips)}))
 
 
 if __name__ == '__main__':

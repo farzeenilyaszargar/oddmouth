@@ -15,7 +15,7 @@
 
 The user resumed work under these instructions. DailyTalk remains the default while source selection and listening approval are open.
 
-The user tests voice progress by entering their own text at `http://localhost:3000/training/`. Training is stopped for listening feedback. The local preview offers DailyTalk acoustic steps 264, 184, and 42, each paired with vocoder step 160. The latest run resumed at step 184 and completed 80 CPU updates in about 28 seconds at the configured 25% CPU share. The previous MPS run stopped early under elevated macOS memory pressure. For future runs, export the checkpoint pair as described in `web/README.md`, leave previous exports available for comparison, and wait for the user's listening feedback. Keep checkpoints and exports local.
+The current goal is continuous staged training. Do not wait for feedback between parts. `scripts/train_in_parts.py` continues the existing DailyTalk checkpoints toward the configured caps and writes periodic localhost previews. Before launching another process, check the existing runner and its child, along with `runs/continuous.log` and `runs/continuous-status.json`. On 2026-11-21 the runner started from acoustic step 264 and vocoder step 560 on CPU. The user can audition exported checkpoint pairs at `http://localhost:3000/training/`. Keep checkpoints and audio local.
 
 Done and pushed:
 - 14.56M model in `oddmouth/model.py`: 8.61M Matcha-style acoustic model and 5.95M Vocos-style vocoder. Discriminators (2.85M) are used in training only.

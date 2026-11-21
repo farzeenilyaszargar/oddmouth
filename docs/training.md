@@ -45,6 +45,8 @@ uv run python scripts/train.py --stage acoustic --minutes 60
 
 Configured upper bounds are 150k acoustic and 300k vocoder steps. Stop earlier when the samples sound good.
 
+To run both stages in consecutive parts, use `uv run --extra browser python scripts/train_in_parts.py`. The runner finishes the vocoder reconstruction warmup first, then advances both stages toward their configured limits. It saves after each part and exports periodic browser previews. Use one runner at a time. Ctrl-C requests a save at the next update boundary. Progress is recorded in `runs/continuous-status.json`.
+
 ## Generating speech
 
 ```bash

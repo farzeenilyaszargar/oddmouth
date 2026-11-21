@@ -14,11 +14,11 @@ Open http://localhost:3000. For production, run `npm run build`; the static site
 
 ## Demo behavior
 
-- Editable text, a 1,000-character input limit, character count, and reset.
-- A black Generate demo button restarts and plays the prerecorded sample. It does not synthesize the entered text and is disabled when the input is blank.
-- A compact character and a concise introductory heading share a row to keep the editor near the top of the page.
+- Editable text, a 1,000-character input limit, and character count.
+- A black Generate button restarts and plays the prerecorded sample. It does not synthesize the entered text and is disabled when the input is blank.
+- A compact character and a concise two-line introductory heading share a row to keep the editor near the top of the page.
 - A bundled five-second WAV, play/pause, seeking, replay, and download.
-- A vector face with eight sound-specific mouth poses, driven by audio-aligned cues extracted from the recording with Rhubarb Lip Sync. Pausing freezes the pose, seeking selects the matching sound, and silence/reset returns the smile. Alignment is automatic and approximate, not validated pronunciation instruction.
+- A vector face with eight sound-specific mouth poses, driven by audio-aligned cues extracted from the recording with Rhubarb Lip Sync. Pausing freezes the pose, seeking selects the matching sound, and silence returns the smile. Alignment is automatic and approximate, not validated pronunciation instruction.
 - The eyes follow the pointer across the page, including during speech. The idle animation is a small grin tilt and a quick wink, followed by a quiet pause. It uses a smooth eight-second CSS loop, with no protruding mouth artwork or timed pose swaps. Focusing the editor stops idle expressions, and speech or paused speech cues take priority. Pointer listeners and playback animation frames are cleaned up on unmount; the idle animation needs no JavaScript timer.
 - Reduced-motion preferences show the static logo instead.
 - An accessible native About dialog, dismissible with its close button, Escape, or the backdrop.

@@ -55,7 +55,10 @@
       "batch_size": 16,
       "segment_frames": 32,
       "learning_rate": 0.0002,
-      "betas": [0.8, 0.99],
+      "betas": [
+        0.8,
+        0.99
+      ],
       "total_steps": 300000,
       "mel_loss_weight": 45,
       "feature_matching_weight": 2,
@@ -69,7 +72,7 @@
   "storage": {
     "max_download_chunk_bytes": 1000000000,
     "managed_data_cache_bytes": 1000000000,
-    "vocoder_wave_fraction": 0.22,
+    "vocoder_wave_fraction": 0.2,
     "minimum_free_disk_bytes": 5000000000,
     "note": "Parquet row groups (~90 MB) are streamed into memory, never saved raw. Prepared features stay under the 1 GB managed cache; only a fraction of clips keep waveforms for vocoder training."
   },
@@ -80,5 +83,7 @@
     "pretrained_tts_weights": false,
     "teacher_distillation": false,
     "other_speaker_training_audio": false
-  }
+  },
+  "cpu_share": 0.25,
+  "cpu_share_note": "User limit: use at most 20-30% of total CPU. Enforced by oddmouth/throttle.py in prepare and train."
 }

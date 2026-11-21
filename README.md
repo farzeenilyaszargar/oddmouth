@@ -8,6 +8,10 @@ The target is a complete deployed neural pipeline of approximately 50 million pa
 
 Research and planning are complete. The first data candidate is **Hi-Fi TTS speaker 9017, John Van Stan**, with **58 hours of clean narration reported by its publisher**. See [the source details and streaming samples](DATA_SOURCE.md). The user has requested source identification only; no audio dataset has been downloaded. No custom model has been trained yet, and ElevenLabs-level quality has not been demonstrated.
 
+## Web demo
+
+The minimal Next.js frontend lives in [`web/`](web/README.md), with the tagline **Small model. Big mouth.** Run `cd web && npm ci && npm run dev` to preview it. It includes an editable text box and a five-second prerecorded sample with play/pause, seeking, and WAV download. Custom Oddmouth synthesis is not connected yet.
+
 ## Project documents
 
 - [Research and implementation plan](VOICE_MODEL_PLAN.md)

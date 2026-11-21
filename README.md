@@ -6,7 +6,7 @@ The target is a complete deployed neural pipeline of approximately 50 million pa
 
 ## Current status
 
-Research is now focused on **expressive, conversational YouTube-style delivery**, with planned `[happy]` and `[angry]` controls. The user rejected the initial Hi-Fi TTS audiobook voice. A replacement source is still being evaluated; see [the source details and streaming samples](DATA_SOURCE.md). The user has requested source identification only; no audio dataset has been downloaded. No custom model has been trained yet, and ElevenLabs-level quality or emotion control has not been demonstrated.
+The user has selected **Dewayne Noel / Dry Creek Wrangler** for expressive, conversational YouTube-style delivery, with planned `[happy]` and `[angry]` controls. Recording/model-distribution rights and clean training hours remain unverified; see [the training preparation plan](DEWAYNE_TRAINING_PLAN.md). The existing no-local-audio-download instruction remains in effect. No custom model has been trained yet, and ElevenLabs-level quality or emotion control has not been demonstrated.
 
 ## Web demo
 

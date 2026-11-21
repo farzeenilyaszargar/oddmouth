@@ -2,11 +2,13 @@
 
 Checked 21 November 2026. **Audition/source research only; no audio downloaded and no training permission established.**
 
+**Selection update:** the user has listened and approved Dewayne as the desired voice. See `DEWAYNE_TRAINING_PLAN.md` for preparation and unresolved ownership questions. No public-domain status is inferred from an unverified report of death.
+
 ## Why this is a better content match
 
 The user's intended performance is an engaged male storyteller giving lessons, advice, and personal reflections. Previous neutral audiobook suggestions were rejected. **Dewayne Noel / Dry Creek Wrangler School** is the new leading audition candidate because the material is direct-to-listener life advice and personal experience rather than book recitation.
 
-The podcast's own description presents Noel as drawing on decades of family, horsemanship, and other life experience to help listeners think through problems. This supports the content/style choice, not a measurement of voice depth or sound quality. The user still needs to approve the voice. The assistant has verified playback, not performed an independent audio-quality listening assessment.
+The podcast's own description presents Noel as drawing on decades of family, horsemanship, and other life experience to help listeners think through problems. This supports the content/style choice, not a measurement of voice depth or sound quality. The user has now approved the voice after listening. The assistant has verified playback, not performed an independent audio-quality listening assessment.
 
 ## Listen
 
@@ -37,4 +39,4 @@ Free listening access is established; a permissive AI-training/voice-cloning lic
 
 If the user likes this delivery, next investigate whether an appropriate grant is available, then assess recordings across multiple episodes for consistent sound, sufficient hours, transcripts, and emotion range. The existing prohibition on local audio downloads remains in effect. Natural personal storytelling does not by itself supply validated `[angry]` and `[happy]` labels or prove those controls will work.
 
-This is the best current **content-style audition lead**, not an approved free training dataset. The original preference for a single speaker with more than 50 usable hours, a complete 50M model, and local browser inference remains unchanged.
+This is the **user-selected voice**, not a verified free training dataset. The original preference for a single speaker with more than 50 usable hours, a complete 50M model, and local browser inference remains unchanged.

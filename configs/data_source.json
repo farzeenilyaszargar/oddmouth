@@ -7,7 +7,7 @@
   "local_audio_download_authorized": false,
   "local_audio_downloaded": false,
   "approved_source": null,
-  "selection_status": "User rejected plain readings; audition direct-to-listener life lessons and storytelling",
+  "selection_status": "Dewayne Noel selected by user; rights, acquisition location, and usable data remain unresolved",
   "leading_raw_source_candidate": {
     "publisher": "Jupiter Broadcasting",
     "show": "LINUX Unplugged",
@@ -74,8 +74,16 @@
     "catalogue_report": "reports/dry_creek_catalogue.json",
     "verified_clean_single_speaker_hours": null,
     "training_license_verified": false,
-    "listening_approved": false,
+    "listening_approved": true,
     "emotion_coverage_verified": false,
-    "status": "New audition lead for direct-to-listener lessons and storytelling; not cleared training data"
+    "status": "User selected voice after listening; training licence unverified"
+  },
+  "selected_voice": {
+    "speaker": "Dewayne Noel",
+    "user_listening_approved": true,
+    "approved_on": "2026-11-21",
+    "training_rights_verified": false,
+    "death_report_verified": false,
+    "training_plan": "DEWAYNE_TRAINING_PLAN.md"
   }
 }

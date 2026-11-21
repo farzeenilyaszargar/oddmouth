@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Review = { id: string; step: number; vocoderStep: number };
 type Model = { acousticStep: number; vocoderStep: number };
@@ -12,6 +12,7 @@ export default function VoicePreview() {
   const [status, setStatus] = useState('Looking for saved voice checkpoints…');
   const [pending, setPending] = useState(false);
   const [output, setOutput] = useState('');
+  const player = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') return;
@@ -36,8 +37,12 @@ export default function VoicePreview() {
     return () => controller.abort();
   }, []);
 
-  useEffect(() => () => {
-    if (output) URL.revokeObjectURL(output);
+  useEffect(() => {
+    if (!output) return;
+    void player.current?.play().catch(() => {
+      // Native controls provide playback if this browser blocks autoplay.
+    });
+    return () => URL.revokeObjectURL(output);
   }, [output]);
 
   const run = runs.find(row => row.id === selected) ?? runs[0];
@@ -51,7 +56,7 @@ export default function VoicePreview() {
       const { synthesize } = await import('./synthesize');
       const audio = await synthesize(run.id, text, () => setStatus('Generating audio…'));
       setOutput(URL.createObjectURL(audio));
-      setStatus('Audio ready.');
+      setStatus('Audio ready. Press Play if it doesn’t start.');
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Couldn’t generate audio.');
     } finally {
@@ -90,7 +95,8 @@ export default function VoicePreview() {
                   </div>
                 </form>
                 {output && <div className="player">
-                  <audio src={output} controls aria-label="Generated voice" />
+                  <audio ref={player} src={output} controls aria-label="Generated voice"
+                    onError={() => setStatus('The generated audio couldn’t play. Try downloading the WAV.')} />
                   <a className="download" href={output} download="oddmouth-preview.wav">Download</a>
                 </div>}
               </section>

@@ -78,6 +78,14 @@ function repeatRows(values: Float32Array, width: number, durations: number[], fr
 }
 
 function wav(samples: Float32Array, sampleRate: number) {
+  let peak = 0;
+  for (const sample of samples) {
+    if (!Number.isFinite(sample)) throw new Error('The checkpoint produced invalid audio.');
+    peak = Math.max(peak, Math.abs(sample));
+  }
+  if (peak < 1e-5) throw new Error('This checkpoint produced silence. Try a different sentence.');
+  // Match preview levels without changing the waveform or boosting noise indefinitely.
+  const gain = Math.min(0.8 / peak, 16);
   const bytes = new ArrayBuffer(44 + samples.length * 2);
   const view = new DataView(bytes);
   for (const [offset, label] of [[0, 'RIFF'], [8, 'WAVEfmt '], [36, 'data']] as const) {
@@ -93,8 +101,7 @@ function wav(samples: Float32Array, sampleRate: number) {
   view.setUint16(34, 16, true);
   view.setUint32(40, samples.length * 2, true);
   for (let i = 0; i < samples.length; i++) {
-    if (!Number.isFinite(samples[i])) throw new Error('The checkpoint produced invalid audio.');
-    view.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(samples[i], 1)) * 32767), true);
+    view.setInt16(44 + i * 2, Math.round(samples[i] * gain * 32767), true);
   }
   return new Blob([bytes], { type: 'audio/wav' });
 }

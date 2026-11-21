@@ -35,19 +35,8 @@
     "mirror_revision": "f0a934ddf4e8da0fc6c53fb42fda2c9ac8ed93df",
     "rejection_reason": "User finds audiobook reading too dull for the intended expressive videos"
   },
-  "required_emotion_tags": [
-    "neutral",
-    "happy",
-    "angry"
-  ],
-  "additional_target_emotion_tags": [
-    "sad",
-    "excited",
-    "calm",
-    "curious",
-    "surprised"
-  ],
-  "emotion_coverage_verified": false,
+  "required_emotion_tags": [],
+  "additional_target_emotion_tags": [],
   "expression_spec": "EXPRESSION_CONTROLS.md",
   "previous_narration_candidate": {
     "speaker": "Mark Nelson",
@@ -59,7 +48,6 @@
     "catalogue_book_count": 6,
     "streaming_preview": "https://www.youtube.com/watch?v=xC56UO6GoKA&t=60s",
     "verified_clean_training_hours": null,
-    "emotion_coverage_verified": false,
     "listening_approved": false,
     "synthetic_voice_permission_verified": false,
     "status": "User rejected plain-reading direction; retained as historical source research"
@@ -77,7 +65,6 @@
     "verified_clean_single_speaker_hours": null,
     "training_license_verified": false,
     "listening_approved": true,
-    "emotion_coverage_verified": false,
     "status": "User selected voice after listening; training licence unverified"
   },
   "selected_voice": {
@@ -87,5 +74,7 @@
     "training_rights_verified": false,
     "death_report_verified": false,
     "training_plan": "DEWAYNE_TRAINING_PLAN.md"
-  }
+  },
+  "emotion_controls_required": false,
+  "training_initialization": "from_scratch_single_speaker_including_vocoder"
 }

@@ -41,6 +41,6 @@ The source pages identify the recordings as **public domain in the USA** and ask
 
 ## Emotion tags
 
-No happy/angry coverage has been measured or labeled for these books. Dramatic dialogue may contain useful performances, but its existence does not establish reliable `[happy]` or `[angry]` conditioning. Those remain required capabilities in `EXPRESSION_CONTROLS.md`. Reject this candidate if it fails the user's delivery preference; do not choose it just because its catalogue exceeds 50 hours.
+This candidate remains rejected for its reading-style delivery. Emotion controls are no longer required; see the current EXPRESSION_CONTROLS.md and single-speaker scratch plan.
 
 Chris Fisher / LINUX Unplugged remains a separate candidate for spontaneous conversational delivery, with its own unverified speaker-hour and licensing questions. No candidate is approved for training yet.

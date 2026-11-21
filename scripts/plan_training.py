@@ -34,7 +34,7 @@ def norm(width):
 
 def parameter_estimate(config):
     """Explicit hypothetical dense blocks: no claim of implemented module counts."""
-    a = config["expanded_candidate"]
+    a = config["architecture_candidate"]
     text, flow = a["text_width"], a["flow_width"]
     text_block = (4 * linear(text, text) + linear(text, a["text_ffn_width"])
                   + linear(a["text_ffn_width"], text) + 2 * norm(text))
@@ -50,8 +50,6 @@ def parameter_estimate(config):
         "text_projection": linear(text, flow),
         "duration_head": duration_head,
         "pitch_energy_heads": 2 * (linear(text, 128) + linear(128, 1)),
-        "emotion_embedding_and_projection": a["emotion_count"] * a["emotion_width"]
-            + linear(a["emotion_width"], flow),
         "time_embedding_mlp": linear(a["time_width"], flow) + linear(flow, flow),
         "mel_input_output": linear(mel, flow) + linear(flow, mel) + norm(flow),
         "conditional_flow_decoder": a["flow_layers"] * flow_block,
@@ -79,29 +77,32 @@ def build_report(config):
             hardware[key] = int(hardware[key])
     modules = parameter_estimate(config)
     total = sum(modules.values())
-    trainable_upper = total - config["expanded_candidate"]["vocoder_parameter_reservation"]
+    acoustic_total = total - config["architecture_candidate"]["vocoder_parameter_reservation"]
+    vocoder_total = config["architecture_candidate"]["vocoder_parameter_reservation"]
     storage = config["storage"]
     allocation_keys = ["active_features_bytes", "persistent_eval_bytes", "replay_bytes",
                        "raw_episode_bytes", "temporary_bytes", "metadata_bytes"]
     if sum(storage[k] for k in allocation_keys) > storage["managed_data_cache_bytes"]:
         raise ValueError("Concurrent data allocations exceed managed cache")
     if total > config["parameter_limit"]:
-        raise ValueError("Expanded candidate exceeds complete parameter limit")
+        raise ValueError("Scratch candidate exceeds complete parameter limit")
     audio = config["audio"]
     feature_rate = audio["mel_bins"] * audio["sample_rate"] / audio["hop_length"] * audio["mel_feature_bytes_per_value"]
     return {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "status": "Analytic plan and observed hardware only; no MPS training benchmark",
         "hardware": hardware,
-        "proposed_expanded_parameters_by_module": modules,
-        "proposed_expanded_parameter_total": total,
+        "proposed_parameters_by_module": modules,
+        "proposed_parameter_total": total,
         "actual_implemented_model_parameter_count": None,
+        "training_scope": config["training_scope"],
         "parameter_headroom": config["parameter_limit"] - total,
         "weights_only_bytes": {"fp32": total * 4, "fp16": total * 2, "int8_ideal": total},
         "fp32_adam_memory_estimate": {
-            "parameters_gradients_two_moments_upper_bytes": trainable_upper * 16,
-            "frozen_vocoder_weights_bytes": config["expanded_candidate"]["vocoder_parameter_reservation"] * 4,
-            "excludes": "Activations, allocator, runtime, CPU/GPU copies and other applications",
+            "acoustic_stage_model_gradients_two_moments_bytes": acoustic_total * 16,
+            "vocoder_generator_model_gradients_two_moments_bytes": vocoder_total * 16,
+            "stages_run_separately": True,
+            "excludes": "Training-only vocoder discriminators and their optimizer state, activations, allocator, runtime, CPU/GPU copies and other applications",
         },
         "storage_arithmetic": {
             "fifty_hours_pcm16_bytes": 50 * 3600 * audio["sample_rate"] * 2,

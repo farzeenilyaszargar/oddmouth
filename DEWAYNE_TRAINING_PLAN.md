@@ -5,7 +5,7 @@ Updated 21 November 2026. The user listened to Dewayne Noel and selected him as 
 ## Current state
 
 - Selected speaker: Dewayne Noel / Dry Creek Wrangler.
-- Intended output: expressive narration and conversational YouTube voiceovers, including happy/angry controls.
+- Intended output: naturally engaging narration and conversational YouTube voiceovers, with no explicit emotion controls.
 - Complete deployed model: at most 50M learned parameters, including the audio decoder.
 - Available metadata: 209 podcast episodes with 87:03:34 listed programme duration. Clean target-speaker hours remain unmeasured.
 - Updated user constraint: download only if necessary, in chunks no larger than 1,000,000,000 bytes. Planning needs no voice audio; no audio acquisition or training has started. See [the Mac training system](MAC_TRAINING_SYSTEM.md) for architecture, bounded working storage, and training stages.
@@ -21,13 +21,12 @@ The intended product makes the scope important: browser inference requires distr
 
 A local, **unsent** enquiry is in `VOICE_PERMISSION_REQUEST.md`. The [official contact page](https://drycreekwranglers.com/contact-us) publishes the contact address. No one has been contacted on the user's behalf.
 
-## Training experiment once the source and acquisition location are settled
+## Training from scratch on one speaker
 
-1. Choose a small pilot from original-channel solo episodes spanning different sessions and delivery styles. Avoid guest appearances and third-party motivational edits. Episode titles cannot determine their audio quality or emotion labels.
-2. Measure usable speech after removing ads, overlap, music, clipping, long silence, duplicated material, and other speakers. Keep episode IDs and provenance; split by whole episode/session. Establish whether more than 50 hours remain for training after holdouts.
-3. Transcribe and align the retained speech, then review errors and audible emotion labels. Preserve conversational pauses and emphasis. Mark uncertainty rather than forcing every clip into neutral/happy/angry.
-4. Validate trainability and browser export for a compact pretrained candidate before a large run. Start with a fixed speaker identity; count the actual complete inference graph before approving the architecture.
-5. Establish a neutral conversational baseline, then train explicit happy/angry conditioning on demonstrated performances. Measure whether the style changes without changing speaker identity or text. Do not infer angry speech merely from an episode discussing anger.
-6. Evaluate on the same texts across emotions, plus long-form narration. Check recognition accuracy, listener-rated emotion, identity consistency, naturalness, and browser latency/memory after quantization.
+1. Select original-channel solo recordings across sessions. Remove music, ads, overlap, other voices, duplication and damaged audio. Measure clean usable hours rather than relying on feed runtime.
+2. Correct transcripts and word boundaries; preserve natural pauses and emphasis. Split by whole session before training. No emotion labels are needed.
+3. Build a compact text encoder, duration/prosody predictors and flow acoustic model with random weights. Train only on this speaker's pairs; learn alignment from training data or use checked offline boundaries.
+4. Separately initialize and train a waveform generator and training-only discriminators from scratch on the same speaker. No pretrained vocoder is substituted.
+5. Integrate the two trained components, evaluate unseen text and natural narration, then validate browser export and selective quantization. No pretrained speaking weights, other-speaker pretraining, synthetic teacher speech or distillation are part of the plan.
 
-This plan does not promise that the podcast contains all required emotions, that a direct small-model adaptation recipe is available, or that 50M achieves ElevenLabs parity. Those are empirical questions for the pilot.
+See [the Mac training system](MAC_TRAINING_SYSTEM.md) for losses, bounded cache rotation, separate phase settings, resumption and measurement gates. The complete model remains below 50M parameters including its vocoder. One-speaker scratch training may require substantial iteration and compute; no ElevenLabs parity or completion time is established.

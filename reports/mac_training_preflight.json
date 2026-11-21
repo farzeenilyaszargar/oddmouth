@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-21T09:43:16.776441+00:00",
+  "generated_utc": "2026-11-21T10:06:49.373646+00:00",
   "status": "Analytic plan and observed hardware only; no MPS training benchmark",
   "hardware": {
     "architecture": "arm64",
@@ -8,35 +8,44 @@
     "cpu_cores": 8,
     "unified_memory_bytes": 8589934592,
     "macos_version": "27.2.1",
-    "disk_free_bytes": 16327405568,
-    "memory_pressure_snapshot": "The system has 8589934592 (524288 pages with a page size of 16384).\nSystem-wide memory free percentage: 27%",
-    "swap_snapshot": "vm.swapusage: total = 8192.00M  used = 7473.69M  free = 718.31M  (encrypted)",
+    "disk_free_bytes": 16119029760,
+    "memory_pressure_snapshot": "The system has 8589934592 (524288 pages with a page size of 16384).\nSystem-wide memory free percentage: 36%",
+    "swap_snapshot": "vm.swapusage: total = 8192.00M  used = 6814.69M  free = 1377.31M  (encrypted)",
     "identifier_policy": "No serial number, hardware UUID, or provisioning identifier collected"
   },
-  "proposed_expanded_parameters_by_module": {
+  "proposed_parameters_by_module": {
     "phoneme_embedding": 131072,
     "text_encoder": 3159552,
     "text_projection": 98688,
     "duration_head": 395009,
     "pitch_energy_heads": 66050,
-    "emotion_embedding_and_projection": 50560,
     "time_embedding_mlp": 197376,
     "mel_input_output": 62672,
     "conditional_flow_decoder": 28399104,
     "vocoder_reservation_not_counted_weights": 13900000
   },
-  "proposed_expanded_parameter_total": 46460083,
+  "proposed_parameter_total": 46409523,
   "actual_implemented_model_parameter_count": null,
-  "parameter_headroom": 3539917,
+  "training_scope": {
+    "initialization": "random_for_all_deployed_neural_components",
+    "speaker_count": 1,
+    "emotion_controls": false,
+    "pretrained_tts_weights": false,
+    "teacher_distillation": false,
+    "other_speaker_training_audio": false,
+    "pretrained_asr_for_transcription_only": true
+  },
+  "parameter_headroom": 3590477,
   "weights_only_bytes": {
-    "fp32": 185840332,
-    "fp16": 92920166,
-    "int8_ideal": 46460083
+    "fp32": 185638092,
+    "fp16": 92819046,
+    "int8_ideal": 46409523
   },
   "fp32_adam_memory_estimate": {
-    "parameters_gradients_two_moments_upper_bytes": 520961328,
-    "frozen_vocoder_weights_bytes": 55600000,
-    "excludes": "Activations, allocator, runtime, CPU/GPU copies and other applications"
+    "acoustic_stage_model_gradients_two_moments_bytes": 520152368,
+    "vocoder_generator_model_gradients_two_moments_bytes": 222400000,
+    "stages_run_separately": true,
+    "excludes": "Training-only vocoder discriminators and their optimizer state, activations, allocator, runtime, CPU/GPU copies and other applications"
   },
   "storage_arithmetic": {
     "fifty_hours_pcm16_bytes": 7938000000,

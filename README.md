@@ -6,9 +6,11 @@ The target is a complete deployed neural pipeline of approximately 50 million pa
 
 ## Current status
 
-The user has selected **Dewayne Noel / Dry Creek Wrangler** for expressive, conversational YouTube-style delivery, with planned `[happy]` and `[angry]` controls. Recording/model-distribution rights and clean training hours remain unverified; see [the training preparation plan](DEWAYNE_TRAINING_PLAN.md). Necessary downloads are conditionally authorized in chunks of at most 1 GB; none were necessary for this planning update. No custom model has been trained yet, and ElevenLabs-level quality or emotion control has not been demonstrated.
+The current plan is to train **one voice entirely from scratch**, including the acoustic model and vocoder, using only the selected speaker's recordings. There are **no explicit emotion controls** and no pretrained TTS/vocoder initialization or teacher distillation. The user selected Dewayne Noel / Dry Creek Wrangler for naturally engaging narration. Recording rights and clean usable hours remain unverified.
 
-The [Mac training system plan](MAC_TRAINING_SYSTEM.md) targets the measured M2 MacBook Air with 8 GiB memory. It specifies a pretrained baseline, a hypothetical 46.5M complete architecture, bounded data rotation, staged experiments, and browser export gates. Reproduce the planning report with `python3 scripts/plan_training.py --output reports/mac_training_preflight.json`; run the storage/planning checks with `python3 -m unittest discover -s tests -v`. These utilities do not download audio or train a model.
+The [Mac training system plan](MAC_TRAINING_SYSTEM.md) targets the M2 MacBook Air with 8 GiB memory. It specifies a hypothetical 46.41M complete architecture, separate acoustic and waveform training phases, a 1 GB combined data cache, resumable runs, and browser export gates. No custom model has been trained and no voice audio was downloaded for planning.
+
+Reproduce the planning report with `python3 scripts/plan_training.py --output reports/mac_training_preflight.json`; run scope/storage checks with `python3 -m unittest discover -s tests -v`. These utilities do not download audio or train speech. Necessary future downloads remain capped at 1,000,000,000 bytes per chunk.
 
 ## Web demo
 
@@ -20,7 +22,7 @@ The minimal Next.js frontend lives in [`web/`](web/README.md), with the tagline 
 - [Research scope and unresolved experiments](RESEARCH_SCOPE.md)
 - [Initial evaluation prompts](VOICE_EVALUATION_PROMPTS.tsv)
 - [Single-speaker data source and streaming samples](DATA_SOURCE.md)
-- [Planned emotion tags and training requirements](EXPRESSION_CONTROLS.md)
+- [Natural delivery scope; emotion controls removed](EXPRESSION_CONTROLS.md)
 - [Mark Nelson narration candidate and 55-hour source inventory](MARK_NELSON_SOURCE.md)
 - [Current story-and-lessons audition lead: Dewayne Noel](DEWAYNE_NOEL_SOURCE.md)
 

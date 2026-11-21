@@ -6,11 +6,11 @@ Source research checked on 21 November 2026. **Source identification only: no au
 
 **The user rejected the audiobook delivery after listening. John Van Stan / Hi-Fi TTS is no longer the recommended target voice.** It meets the published hours requirement but misses the desired expressive, conversational YouTube presentation style.
 
-The target is a deep male creator voice: engaged explanation, storytelling, rhetorical questions, emphasis, reactions, and natural changes in pace. Audio cleanliness and quantity alone are insufficient. No replacement is approved yet, and no source meeting all requirements has been verified.
+The target is a deep male creator voice: engaged explanation, storytelling, rhetorical questions, emphasis, reactions, and natural changes in pace. Audio cleanliness and quantity alone are insufficient. The replacement voice has been selected below; clean training hours and rights remain unverified.
 
 The user also rejected Mark Nelson's book-reading direction. **Stop prioritizing audiobook catalogues.** The user has now selected **Dewayne Noel / Dry Creek Wrangler** after listening, for personal stories and life lessons. See `DEWAYNE_NOEL_SOURCE.md`: its feed lists 209 episodes totaling 87:03:34, but clean single-speaker hours and a training licence remain unverified. Voice preference is settled; acquisition and training clearance are not established.
 
-## Leading source to audition: Chris Fisher / LINUX Unplugged
+## Historical alternative: Chris Fisher / LINUX Unplugged
 
 - [Host profile](https://www.jupiterbroadcasting.com/hosts/chris/)
 - [Example episode: Chris' Data Crisis](https://www.jupiterbroadcasting.com/show/linux-unplugged/355/)
@@ -37,9 +37,7 @@ If selected later, preparation would identify one speaker across episodes, remov
 
 Choose performance style first, then verify speaker consistency, usable hours, sound quality, transcripts, and rights. Prefer suitable expressive data over filling an hours target with dull delivery. The user's preference remains above 50 hours; no smaller dataset is silently substituted.
 
-The user also requires explicit `[happy]` and `[angry]` controls. A candidate must therefore be assessed for emotion coverage in the same target voice, not just overall conversational quality. See `EXPRESSION_CONTROLS.md`. No current candidate has passed that coverage check.
-
-Training on neutral audiobooks may teach a small model to read competently without teaching the intended presentation style. A pretrained model's expressive ability can help adaptation, but a speed/pitch control or a style label alone does not establish convincing expressive generation. Any teacher-assisted style expansion must be tested rather than assumed to fix the mismatch.
+The current model will be trained from scratch on this one selected speaker, including the vocoder. Explicit emotion controls have been removed. Assess naturally engaging delivery and phonetic/transcript coverage, without emotion annotation or teacher-generated supplements. See [the current delivery scope](EXPRESSION_CONTROLS.md).
 
 ## Historical candidate: Hi-Fi TTS (rejected for delivery)
 
@@ -64,7 +62,7 @@ The duration and speaker identity are reported in **Table 2, page 3** of the [da
 - [Speaker's LibriVox profile](https://librivox.org/reader/9017)
 - [Community Hugging Face mirror](https://huggingface.co/datasets/MikhailT/hifi-tts)
 
-The official download contains multiple speakers. A future acquisition must select **only speaker 9017 / clean**. The mirror is a repackaging of the same corpus, not an additional voice source. Its observed revision is recorded in `configs/data_source.json` for reproducibility. No mirror audio was downloaded or compared with the official archive.
+The official download contains multiple speakers. If this historical candidate were ever reconsidered, acquisition would select **only speaker 9017 / clean**. It is not part of the current training corpus. The mirror is a repackaging of the same corpus, not an additional voice source. Its observed revision is recorded in `configs/data_source.json` for reproducibility. No mirror audio was downloaded or compared with the official archive.
 
 ## Listen before choosing
 
@@ -83,6 +81,6 @@ The [CC BY 4.0 terms](https://creativecommons.org/licenses/by/4.0/) permit reuse
 ## Project constraints retained
 
 - Target a complete deployed neural pipeline of **50M parameters or fewer**, including its audio decoder. No model count is claimed yet.
-- Do not download the voice dataset locally unless the user later requests it.
+- Download only when necessary, in chunks at most 1,000,000,000 bytes, following the bounded Mac data-cache plan. No download is needed for planning.
 - Store source documentation and project changes in the Oddmouth GitHub repository.
 - Before future training, measure available hours after filtering and holdouts. Do not substitute the 58-hour headline for a verified training manifest.

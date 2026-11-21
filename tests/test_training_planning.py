@@ -87,13 +87,24 @@ class PlanningTest(unittest.TestCase):
         self.assertGreater(sum(counts.values()), 40_000_000)
         self.assertEqual(config["storage"]["max_download_chunk_bytes"], 1_000_000_000)
 
+    def test_scratch_single_voice_without_emotion_modules(self):
+        config = json.loads((ROOT / "configs/mac_training.json").read_text())
+        scope = config["training_scope"]
+        self.assertEqual(scope["speaker_count"], 1)
+        self.assertFalse(scope["pretrained_tts_weights"])
+        self.assertFalse(scope["emotion_controls"])
+        self.assertFalse(scope["teacher_distillation"])
+        self.assertFalse(scope["other_speaker_training_audio"])
+        self.assertFalse(any("emotion" in key for key in planner.parameter_estimate(config)))
+        self.assertIn("train_vocoder_from_random_init", config["training"]["stages"])
+
     def test_rejects_oversized_architecture_and_cache(self):
         config = json.loads((ROOT / "configs/mac_training.json").read_text())
         with patch.object(planner, "command", return_value=None):
-            config["expanded_candidate"]["flow_layers"] = 100
+            config["architecture_candidate"]["flow_layers"] = 100
             with self.assertRaises(ValueError):
                 planner.build_report(config)
-            config["expanded_candidate"]["flow_layers"] = 12
+            config["architecture_candidate"]["flow_layers"] = 12
             config["storage"]["temporary_bytes"] = 1_000_000_000
             with self.assertRaises(ValueError):
                 planner.build_report(config)

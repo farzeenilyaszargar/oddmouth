@@ -37,6 +37,4 @@ The metadata inventory is in `reports/dry_creek_catalogue.json`. The 87-hour tot
 
 Free listening access is established; a permissive AI-training/voice-cloning licence is **not**. The feed states `© 2023 Dry Creek Wrangler Podcast`; the creator's website also carries a copyright notice. These notices do not establish the intended commercial model-distribution rights. No outreach, agreement, or permission request was sent.
 
-If the user likes this delivery, next investigate whether an appropriate grant is available, then assess recordings across multiple episodes for consistent sound, sufficient hours, transcripts, and emotion range. The existing prohibition on local audio downloads remains in effect. Natural personal storytelling does not by itself supply validated `[angry]` and `[happy]` labels or prove those controls will work.
-
-This is the **user-selected voice**, not a verified free training dataset. The original preference for a single speaker with more than 50 usable hours, a complete 50M model, and local browser inference remains unchanged.
+The user selected this delivery. Next assess original recordings across sessions for usable single-speaker hours, transcripts, sound consistency and rights. Train the speaking model and vocoder from scratch only on this speaker. No explicit emotion controls or emotion labels are required. Necessary downloads are conditionally allowed in chunks no larger than 1 GB; none were needed for planning. See [the current Mac plan](MAC_TRAINING_SYSTEM.md).

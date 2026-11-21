@@ -17,7 +17,7 @@ Open http://localhost:3000. For production, run `npm run build`; the static site
 - Editable text, a 1,000-character input limit, character count, and reset.
 - A bundled five-second WAV, play/pause, seeking, replay, and download.
 - A vector face with nine sound-specific mouth poses, driven by audio-aligned cues extracted from the recording with Rhubarb Lip Sync. Pausing freezes the pose, seeking selects the matching sound, and silence/reset returns the smile. Alignment is automatic and approximate, not validated pronunciation instruction.
-- The eyes follow the pointer across the page, including during speech. Idle expressions include a tongue, a crooked grin, and puckered lips. Focusing the editor stops idle expressions, and speech or paused speech cues take priority. Pointer listeners, animation frames, and idle timers are cleaned up on unmount.
+- The eyes follow the pointer across the page, including during speech. The idle gesture smoothly pulls into a crooked grin, squints one eye, extends and wiggles a tongue below the mouth, then retracts it. It uses a continuous nine-second SVG and CSS animation rather than timed swaps between speech poses. Focusing the editor stops idle expressions, and speech or paused speech cues take priority. Pointer listeners and playback animation frames are cleaned up on unmount; the idle animation needs no JavaScript timer.
 - Reduced-motion preferences show the static logo instead.
 - An accessible native About dialog, dismissible with its close button, Escape, or the backdrop.
 - A 100svh shell keeps the navbar and workspace in one viewport. The central workspace can scroll internally on unusually short screens or at high text zoom.

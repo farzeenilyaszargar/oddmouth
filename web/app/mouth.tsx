@@ -3,11 +3,11 @@
 import { useEffect, useRef } from 'react';
 import type { MouthPose } from './lib/lip-sync';
 
-type MouthProps = { pose?: MouthPose; className?: string; trackEyes?: boolean };
+type MouthProps = { pose?: MouthPose; className?: string; trackEyes?: boolean; playful?: boolean };
 
 // Original vector artwork based on the supplied three-tooth face. The sound
 // groups follow Rhubarb's A-H/X convention; recognition remains approximate.
-export default function Mouth({ pose = 'smile', className = '', trackEyes = false }: MouthProps) {
+export default function Mouth({ pose = 'smile', className = '', trackEyes = false, playful = false }: MouthProps) {
   const face = useRef<SVGSVGElement>(null);
   useEffect(() => {
     if (!trackEyes) return;
@@ -60,8 +60,17 @@ export default function Mouth({ pose = 'smile', className = '', trackEyes = fals
     bite: <g><path d="M38 100Q160 72 282 100Q280 155 160 163Q40 155 38 100Z" fill="currentColor" /><path d="M65 99Q160 84 255 99L243 129Q160 147 77 129Z" fill="white" /><path d="M125 94V133M192 94V133M59 129Q160 156 261 129" stroke="currentColor" strokeWidth="5" strokeLinecap="round" /></g>,
     tongue: <g><path d="M43 94Q160 61 277 94C283 150 221 182 160 182C99 182 37 150 43 94Z" fill="currentColor" /><path d="M79 89L127 94L122 115Q90 123 79 89ZM137 96H183L180 116H140ZM193 94L241 89Q230 123 198 115Z" fill="white" /><path d="M121 162C111 132 134 113 160 113C186 113 209 132 199 162Q160 184 121 162Z" fill="white" /><path d="M160 117V141" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></g>,
   };
-  return <svg ref={face} className={`mouth ${trackEyes ? 'living-mouth' : ''} ${className}`} data-pose={pose} viewBox="0 0 320 200" fill="none" aria-hidden="true">
-    <g className="eyes"><g className="eye-blink"><circle cx="76" cy="35" r="16" fill="currentColor" /><circle cx="244" cy="35" r="16" fill="currentColor" /></g></g>
-    {expressions[pose]}
+  return <svg ref={face} className={`mouth ${trackEyes ? 'living-mouth' : ''} ${playful ? 'idle-mode' : ''} ${className}`} data-pose={pose} data-mode={playful ? 'teasing' : 'speech'} viewBox="0 0 320 200" fill="none" aria-hidden="true">
+    <g className="eyes"><g className="eye-blink"><g className="eye-left"><circle cx="76" cy="35" r="16" fill="currentColor" /></g><g className="eye-right"><circle cx="244" cy="35" r="16" fill="currentColor" /></g></g></g>
+    {playful ? <g className="idle-performance">
+      <path fill="currentColor" d="M20 93C12 51 76 77 128 84Q160 91 192 84C244 77 308 51 300 93C312 150 225 190 160 190C95 190 8 150 20 93Z">
+        <animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.18;.3;.58;.76;1" keySplines=".4 0 .2 1;.4 0 .2 1;.4 0 .2 1;.4 0 .2 1;.4 0 .2 1" values="M20 93C12 51 76 77 128 84Q160 91 192 84C244 77 308 51 300 93C312 150 225 190 160 190C95 190 8 150 20 93Z;M20 93C12 51 76 77 128 84Q160 91 192 84C244 77 308 51 300 93C312 150 225 190 160 190C95 190 8 150 20 93Z;M20 105C12 70 76 89 128 94Q160 99 192 86C244 70 308 40 300 84C312 150 225 188 160 184C95 180 8 151 20 105Z;M20 105C12 70 76 89 128 94Q160 99 192 86C244 70 308 40 300 84C312 150 225 188 160 184C95 180 8 151 20 105Z;M20 93C12 51 76 77 128 84Q160 91 192 84C244 77 308 51 300 93C312 150 225 190 160 190C95 190 8 150 20 93Z;M20 93C12 51 76 77 128 84Q160 91 192 84C244 77 308 51 300 93C312 150 225 190 160 190C95 190 8 150 20 93Z" />
+      </path>
+      <g className="teasing-teeth">{teeth}</g>
+      <g className="teasing-tongue">
+        <path d="M144 145C155 134 186 136 198 148L211 185C224 225 165 244 151 207L137 166Q134 152 144 145Z" fill="white" stroke="currentColor" strokeWidth="5" strokeLinejoin="round" />
+        <path d="M169 147Q184 165 183 190" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+      </g>
+    </g> : expressions[pose]}
   </svg>;
 }

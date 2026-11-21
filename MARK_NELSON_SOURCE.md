@@ -2,6 +2,8 @@
 
 Checked 21 November 2026. **Source research only. No audio was downloaded, and no trained voice is claimed.**
 
+**Superseded:** the user rejected this plain-reading direction. Retained for research history; it is no longer the leading audition recommendation. See `DEWAYNE_NOEL_SOURCE.md` for the story-and-lessons candidate.
+
 ## Recommendation
 
 Audition **Mark Nelson, LibriVox reader 251**, for the user's clean, thick-voiced narration brief. This is a different performer from the previously rejected John Van Stan. It is a candidate for documentary/storytelling voiceovers, not a verified match for spontaneous YouTube presentation.

@@ -7,7 +7,7 @@
   "local_audio_download_authorized": false,
   "local_audio_downloaded": false,
   "approved_source": null,
-  "selection_status": "Source search revised after user rejected audiobook delivery",
+  "selection_status": "User rejected plain readings; audition direct-to-listener life lessons and storytelling",
   "leading_raw_source_candidate": {
     "publisher": "Jupiter Broadcasting",
     "show": "LINUX Unplugged",
@@ -47,7 +47,7 @@
   ],
   "emotion_coverage_verified": false,
   "expression_spec": "EXPRESSION_CONTROLS.md",
-  "leading_narration_candidate": {
+  "previous_narration_candidate": {
     "speaker": "Mark Nelson",
     "publisher": "LibriVox",
     "reader_id": "251",
@@ -60,6 +60,22 @@
     "emotion_coverage_verified": false,
     "listening_approved": false,
     "synthetic_voice_permission_verified": false,
-    "status": "New audition candidate for deep narration; not an approved training source"
+    "status": "User rejected plain-reading direction; retained as historical source research"
+  },
+  "leading_storytelling_candidate": {
+    "speaker": "Dewayne Noel",
+    "source": "Dry Creek Wrangler Podcast / Dry Creek Wrangler School",
+    "source_url": "https://www.youtube.com/@DryCreekWranglerSchool",
+    "streaming_preview": "https://www.youtube.com/watch?v=LDMY7qtOPiI&t=60s",
+    "podcast_url": "https://podcasts.apple.com/us/podcast/dry-creek-wrangler-podcast/id1667068831",
+    "feed_url": "https://feeds.megaphone.fm/dry-creek-wrangler",
+    "listed_episodes": 209,
+    "listed_episode_hours_before_filtering": 87.05944444444444,
+    "catalogue_report": "reports/dry_creek_catalogue.json",
+    "verified_clean_single_speaker_hours": null,
+    "training_license_verified": false,
+    "listening_approved": false,
+    "emotion_coverage_verified": false,
+    "status": "New audition lead for direct-to-listener lessons and storytelling; not cleared training data"
   }
 }

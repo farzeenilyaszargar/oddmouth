@@ -20,6 +20,7 @@ The minimal Next.js frontend lives in [`web/`](web/README.md), with the tagline 
 - [Single-speaker data source and streaming samples](DATA_SOURCE.md)
 - [Planned emotion tags and training requirements](EXPRESSION_CONTROLS.md)
 - [Mark Nelson narration candidate and 55-hour source inventory](MARK_NELSON_SOURCE.md)
+- [Current story-and-lessons audition lead: Dewayne Noel](DEWAYNE_NOEL_SOURCE.md)
 
 ## Repository
 

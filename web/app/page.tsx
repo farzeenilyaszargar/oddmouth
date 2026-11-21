@@ -40,7 +40,7 @@ export default function Home() {
     <div className="site">
       <header className="header">
         <a className="brand" href="/" aria-label="Oddmouth home">oddmouth</a>
-        <nav aria-label="Main navigation"><button className="about-button" onClick={() => about.current?.showModal()}>About</button></nav>
+        <nav className="nav-links" aria-label="Main navigation"><a className="nav-link" href="https://github.com/farzeenilyaszargar/oddmouth" target="_blank" rel="noreferrer">GitHub</a><button className="about-button" onClick={() => about.current?.showModal()}>About</button></nav>
       </header>
 
       <main>

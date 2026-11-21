@@ -1,68 +1,77 @@
 {
-  "status": "Planning configuration; no speech model implementation or training is claimed",
-  "parameter_limit": 50000000,
-  "preferred_start": "Train a single-speaker acoustic generator and vocoder from random initialization",
+  "status": "Implemented 15M-class design; training quality not yet measured",
+  "parameter_limit": 15000000,
   "audio": {
     "sample_rate": 22050,
     "mel_bins": 80,
     "hop_length": 256,
     "fft_size": 1024,
-    "mel_feature_bytes_per_value": 2,
-    "note": "One consistent 22.05kHz mel convention for newly trained acoustic model and vocoder; no checkpoint compatibility dependency"
+    "fmax": 8000,
+    "mel_feature_bytes_per_value": 2
+  },
+  "data_source": {
+    "name": "DailyTalk (male speaker)",
+    "hf_repo": "innovationm-ai/dailytalk-male",
+    "hf_revision": "418c08304186f713068b9f6d0215cadfbf5dd148",
+    "files": [
+      "data/train-00000-of-00004.parquet",
+      "data/train-00001-of-00004.parquet",
+      "data/train-00002-of-00004.parquet",
+      "data/train-00003-of-00004.parquet"
+    ],
+    "original_dataset": "https://github.com/keonlee9420/DailyTalk",
+    "original_license": "CC-BY-SA-4.0 (authors' README says 'freely available for academic use with CC-BY-SA 4.0')",
+    "mirror_label_not_authoritative": "Mirror card says apache-2.0; the original dataset licence governs",
+    "eval_clips": 150
+  },
+  "architecture": {
+    "text_width": 192,
+    "text_layers": 4,
+    "text_heads": 2,
+    "text_ffn": 768,
+    "duration_width": 192,
+    "decoder_width": 256,
+    "decoder_layers": 8,
+    "decoder_heads": 4,
+    "decoder_ffn": 1024,
+    "time_width": 128,
+    "vocoder_width": 384,
+    "vocoder_layers": 6,
+    "vocoder_ffn": 1152
+  },
+  "training": {
+    "device": "mps",
+    "dtype": "float32",
+    "acoustic": {
+      "batch_frames": 6000,
+      "max_batch": 32,
+      "learning_rate": 0.0002,
+      "warmup_steps": 1000,
+      "total_steps": 150000,
+      "weight_decay": 0.01,
+      "gradient_clip_norm": 1.0
+    },
+    "vocoder": {
+      "batch_size": 16,
+      "segment_frames": 32,
+      "learning_rate": 0.0002,
+      "betas": [0.8, 0.99],
+      "total_steps": 300000,
+      "mel_loss_weight": 45,
+      "feature_matching_weight": 2,
+      "adversarial_start_step": 2000,
+      "gradient_clip_norm": 10.0
+    },
+    "synthesis_flow_steps": 8,
+    "stages_run_in_separate_processes": true,
+    "checkpoint_every_minutes": 10
   },
   "storage": {
     "max_download_chunk_bytes": 1000000000,
     "managed_data_cache_bytes": 1000000000,
-    "active_features_bytes": 450000000,
-    "persistent_eval_bytes": 100000000,
-    "replay_bytes": 100000000,
-    "raw_episode_bytes": 100000000,
-    "temporary_bytes": 200000000,
-    "metadata_bytes": 50000000,
+    "vocoder_wave_fraction": 0.22,
     "minimum_free_disk_bytes": 5000000000,
-    "note": "Decimal GB; cache cap includes concurrent raw/features/temp/eval/replay. Code, dependencies, weights and checkpoints are separate and explicitly budgeted."
-  },
-  "training": {
-    "backend": "pytorch_mps_after_forward_backward_validation",
-    "initial_dtype": "float32",
-    "microbatch_size": 1,
-    "gradient_accumulation_steps": 16,
-    "initial_crop_seconds": 4,
-    "maximum_crop_seconds_after_benchmark": 6,
-    "loader_workers": 0,
-    "pin_memory": false,
-    "gradient_clip_norm": 1.0,
-    "initial_learning_rate_proposal": 0.0001,
-    "optimizer": "AdamW",
-    "weight_decay_proposal": 0.01,
-    "flow_inference_steps_to_compare": [
-      2,
-      4,
-      8
-    ],
-    "asr_and_training_run_concurrently": false,
-    "checkpoint_keep_last": 1,
-    "checkpoint_keep_best": 1,
-    "epoch_shuffle_shards": true,
-    "shuffle_examples_within_shard": true,
-    "replay_fraction_proposal": 0.2,
-    "requires_full_model_benchmark_before_long_run": true,
-    "stages": [
-      "train_acoustic_from_random_init",
-      "train_vocoder_from_random_init",
-      "calibrate_own_vocoder_on_predicted_mels",
-      "export_and_validate"
-    ],
-    "acoustic_stage_vocoder_loaded": false,
-    "vocoder_stage_acoustic_loaded": false,
-    "vocoder_waveform_segment_samples_proposal": 8192,
-    "vocoder_discriminators_training_only": true
-  },
-  "authorization": {
-    "conditional_small_downloads_authorized_by_user": true,
-    "training_audio_download_needed_for_this_planning_task": false,
-    "selected_voice_rights_verified": false,
-    "voice_audio_downloaded": false
+    "note": "Parquet row groups (~90 MB) are streamed into memory, never saved raw. Prepared features stay under the 1 GB managed cache; only a fraction of clips keep waveforms for vocoder training."
   },
   "training_scope": {
     "initialization": "random_for_all_deployed_neural_components",
@@ -70,20 +79,6 @@
     "emotion_controls": false,
     "pretrained_tts_weights": false,
     "teacher_distillation": false,
-    "other_speaker_training_audio": false,
-    "pretrained_asr_for_transcription_only": true
-  },
-  "architecture_candidate": {
-    "status": "Primary scratch architecture proposal; analytic estimate, not implemented",
-    "phoneme_vocab_size": 512,
-    "text_width": 256,
-    "text_layers": 4,
-    "text_ffn_width": 1024,
-    "flow_width": 384,
-    "flow_layers": 12,
-    "flow_ffn_width": 1536,
-    "attention_heads": 6,
-    "time_width": 128,
-    "vocoder_parameter_reservation": 13900000
+    "other_speaker_training_audio": false
   }
 }

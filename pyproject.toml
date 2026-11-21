@@ -1,0 +1,17 @@
+[project]
+name = "oddmouth"
+version = "0.1.0"
+description = "Single-speaker text to speech trained from random initialization"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "torch==2.10.0",
+    "numpy>=1.26,<3",
+    "scipy>=1.13,<2",
+    "phonemizer==3.3.0",
+    "pyarrow>=26.0.1",
+    "huggingface-hub>=2.4.0",
+    "soundfile>=0.14.0",
+]
+
+[project.optional-dependencies]
+prepare = []

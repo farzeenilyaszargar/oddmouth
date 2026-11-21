@@ -1,15 +1,29 @@
 {
   "project": "Oddmouth",
-  "target_style": "Expressive, conversational YouTube presenter delivery; deep male voice",
+  "target_style": "Natural conversational male voice for narration and developer / social-media videos",
   "preferred_single_speaker_hours": 50,
-  "model_parameter_limit": 50000000,
+  "model_parameter_limit": 15000000,
   "model_limit_includes_audio_decoder": true,
   "local_audio_download_authorized": true,
   "local_audio_download_authorization_scope": "Only if necessary; maximum 1,000,000,000 bytes per chunk. No acquisition needed for planning.",
   "max_download_chunk_bytes": 1000000000,
   "local_audio_downloaded": false,
-  "approved_source": null,
-  "selection_status": "Dewayne Noel selected by user; rights, acquisition location, and usable data remain unresolved",
+  "approved_source": {
+    "dataset": "DailyTalk (male speaker)",
+    "hf_repo": "innovationm-ai/dailytalk-male",
+    "hf_revision": "418c08304186f713068b9f6d0215cadfbf5dd148",
+    "published_male_hours": 10.8,
+    "hours_evidence": "DailyTalk paper table: 11,867 male clips, 38,902 s",
+    "original_license": "CC-BY-SA-4.0",
+    "licence_caveats": [
+      "Authors describe it as available for academic use under CC-BY-SA 4.0",
+      "Dialogue text derives from DailyDialog (CC-BY-NC-SA 4.0); commercial use of models is not cleared",
+      "Mirror card says apache-2.0; not authoritative"
+    ],
+    "listening_approved": false,
+    "gender_verified_by_pitch": null
+  },
+  "selection_status": "DailyTalk male speaker selected as the ready-made, transcribed, streamable source (2026-11-21); user still needs to listen and approve",
   "leading_raw_source_candidate": {
     "publisher": "Jupiter Broadcasting",
     "show": "LINUX Unplugged",
@@ -65,7 +79,7 @@
     "verified_clean_single_speaker_hours": null,
     "training_license_verified": false,
     "listening_approved": true,
-    "status": "User selected voice after listening; training licence unverified"
+    "status": "Superseded by DailyTalk male; retained as historical research"
   },
   "selected_voice": {
     "speaker": "Dewayne Noel",
@@ -73,8 +87,25 @@
     "approved_on": "2026-11-21",
     "training_rights_verified": false,
     "death_report_verified": false,
-    "training_plan": "DEWAYNE_TRAINING_PLAN.md"
+    "training_plan": "DEWAYNE_TRAINING_PLAN.md",
+    "status": "Superseded 2026-11-21: user asked for an easily accessible, already-labelled source; Dewayne Noel retained as historical research"
   },
   "emotion_controls_required": false,
-  "training_initialization": "from_scratch_single_speaker_including_vocoder"
+  "training_initialization": "from_scratch_single_speaker_including_vocoder",
+  "non_commercial_alternatives": [
+    {
+      "dataset": "Expresso",
+      "speakers": "2 male, 2 female",
+      "hours": "~40 total (11 read, 30 improvised)",
+      "license": "CC-BY-NC-4.0",
+      "hf_repo": "ylacombe/expresso"
+    },
+    {
+      "dataset": "RyanSpeech",
+      "speakers": "1 male voice actor",
+      "hours": ">10",
+      "license": "CC-BY-NC-ND-4.0",
+      "source": "https://www.kaggle.com/datasets/roholazandie/ryanspeech"
+    }
+  ]
 }

@@ -1,7 +1,7 @@
-"""Generate a hardware-aware planning report without downloading data or weights.
+"""Report real Oddmouth parameter counts and hardware; downloads nothing.
 
 python3 scripts/plan_training.py --output reports/mac_training_preflight.json
-All parameter/memory counts are analytic estimates, not a model benchmark.
+Memory figures exclude activations; this is not a training benchmark.
 """
 
 from __future__ import annotations
@@ -24,38 +24,17 @@ def command(*args):
         return None
 
 
-def linear(inputs, outputs):
-    return inputs * outputs + outputs
-
-
-def norm(width):
-    return 2 * width
-
-
-def parameter_estimate(config):
-    """Explicit hypothetical dense blocks: no claim of implemented module counts."""
-    a = config["architecture_candidate"]
-    text, flow = a["text_width"], a["flow_width"]
-    text_block = (4 * linear(text, text) + linear(text, a["text_ffn_width"])
-                  + linear(a["text_ffn_width"], text) + 2 * norm(text))
-    # Self-attention + cross-attention + FFN; three layer norms per flow block.
-    flow_block = (8 * linear(flow, flow) + linear(flow, a["flow_ffn_width"])
-                  + linear(a["flow_ffn_width"], flow) + 3 * norm(flow))
-    mel = config["audio"]["mel_bins"]
-    # Two kernel-3 conv layers, layer norms, and one scalar duration head.
-    duration_head = 2 * (3 * text * text + text + norm(text)) + linear(text, 1)
-    modules = {
-        "phoneme_embedding": a["phoneme_vocab_size"] * text,
-        "text_encoder": a["text_layers"] * text_block + norm(text),
-        "text_projection": linear(text, flow),
-        "duration_head": duration_head,
-        "pitch_energy_heads": 2 * (linear(text, 128) + linear(128, 1)),
-        "time_embedding_mlp": linear(a["time_width"], flow) + linear(flow, flow),
-        "mel_input_output": linear(mel, flow) + linear(flow, mel) + norm(flow),
-        "conditional_flow_decoder": a["flow_layers"] * flow_block,
-        "vocoder_reservation_not_counted_weights": a["vocoder_parameter_reservation"],
-    }
-    return modules
+def parameter_counts(config):
+    """Instantiate the real modules (random weights) and count parameters."""
+    import sys
+    sys.path.insert(0, str(ROOT))
+    from oddmouth.model import AcousticModel, Vocoder, Discriminators, count
+    from oddmouth.text import VOCAB_SIZE
+    a = config["architecture"]
+    return {
+        "acoustic_model": count(AcousticModel(a, VOCAB_SIZE)),
+        "vocoder": count(Vocoder(a)),
+    }, count(Discriminators())
 
 
 def build_report(config):
@@ -75,47 +54,36 @@ def build_report(config):
     for key in ["cpu_cores", "unified_memory_bytes"]:
         if hardware[key] is not None:
             hardware[key] = int(hardware[key])
-    modules = parameter_estimate(config)
+    modules, discriminators = parameter_counts(config)
     total = sum(modules.values())
-    acoustic_total = total - config["architecture_candidate"]["vocoder_parameter_reservation"]
-    vocoder_total = config["architecture_candidate"]["vocoder_parameter_reservation"]
     storage = config["storage"]
-    allocation_keys = ["active_features_bytes", "persistent_eval_bytes", "replay_bytes",
-                       "raw_episode_bytes", "temporary_bytes", "metadata_bytes"]
-    if sum(storage[k] for k in allocation_keys) > storage["managed_data_cache_bytes"]:
-        raise ValueError("Concurrent data allocations exceed managed cache")
     if total > config["parameter_limit"]:
-        raise ValueError("Scratch candidate exceeds complete parameter limit")
+        raise ValueError("Deployed model exceeds parameter limit")
     audio = config["audio"]
     feature_rate = audio["mel_bins"] * audio["sample_rate"] / audio["hop_length"] * audio["mel_feature_bytes_per_value"]
+    hours = 10.8
     return {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
-        "status": "Analytic plan and observed hardware only; no MPS training benchmark",
+        "status": "Real module parameter counts and observed hardware; not a training benchmark",
         "hardware": hardware,
-        "proposed_parameters_by_module": modules,
-        "proposed_parameter_total": total,
-        "actual_implemented_model_parameter_count": None,
+        "deployed_parameters_by_module": modules,
+        "deployed_parameter_total": total,
+        "parameter_limit": config["parameter_limit"],
+        "training_only_discriminator_parameters": discriminators,
         "training_scope": config["training_scope"],
-        "parameter_headroom": config["parameter_limit"] - total,
         "weights_only_bytes": {"fp32": total * 4, "fp16": total * 2, "int8_ideal": total},
-        "fp32_adam_memory_estimate": {
-            "acoustic_stage_model_gradients_two_moments_bytes": acoustic_total * 16,
-            "vocoder_generator_model_gradients_two_moments_bytes": vocoder_total * 16,
-            "stages_run_separately": True,
-            "excludes": "Training-only vocoder discriminators and their optimizer state, activations, allocator, runtime, CPU/GPU copies and other applications",
+        "fp32_adam_bytes_excluding_activations": {
+            "acoustic": modules["acoustic_model"] * 16,
+            "vocoder_plus_discriminators": (modules["vocoder"] + discriminators) * 16,
         },
-        "storage_arithmetic": {
-            "fifty_hours_pcm16_bytes": 50 * 3600 * audio["sample_rate"] * 2,
-            "fifty_hours_fp16_mel_bytes_approx": round(50 * 3600 * feature_rate),
-            "active_feature_shard_audio_hours_approx": storage["active_features_bytes"] / feature_rate / 3600,
-            "note": "Payload estimates before headers, padding, other features or compression",
+        "dailytalk_male_storage_estimate_bytes": {
+            "fp16_mel": round(hours * 3600 * feature_rate),
+            "pcm16_wave_all_clips": round(hours * 3600 * audio["sample_rate"] * 2),
+            "pcm16_wave_kept_for_vocoder": round(hours * 3600 * audio["sample_rate"] * 2 * storage["vocoder_wave_fraction"]),
         },
         "download_chunk_cap_bytes": storage["max_download_chunk_bytes"],
-        "concurrent_managed_cache_allocations_bytes": {k: storage[k] for k in allocation_keys},
-        "concurrent_managed_cache_total_bytes": sum(storage[k] for k in allocation_keys),
+        "managed_data_cache_bytes": storage["managed_data_cache_bytes"],
         "minimum_disk_reserve_satisfied_now": disk.free >= storage["minimum_free_disk_bytes"],
-        "speech_audio_downloads_performed": False,
-        "training_started": False,
     }
 
 

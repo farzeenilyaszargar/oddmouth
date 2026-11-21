@@ -79,12 +79,12 @@ class CacheTest(unittest.TestCase):
 
 
 class PlanningTest(unittest.TestCase):
-    def test_all_modules_and_vocoder_fit(self):
+    def test_deployed_model_fits_15m(self):
         config = json.loads((ROOT / "configs/mac_training.json").read_text())
-        counts = planner.parameter_estimate(config)
-        self.assertIn("vocoder_reservation_not_counted_weights", counts)
-        self.assertLessEqual(sum(counts.values()), 50_000_000)
-        self.assertGreater(sum(counts.values()), 40_000_000)
+        counts, _ = planner.parameter_counts(config)
+        self.assertEqual(set(counts), {"acoustic_model", "vocoder"})
+        self.assertLessEqual(sum(counts.values()), 15_000_000)
+        self.assertGreater(sum(counts.values()), 12_000_000)
         self.assertEqual(config["storage"]["max_download_chunk_bytes"], 1_000_000_000)
 
     def test_scratch_single_voice_without_emotion_modules(self):
@@ -95,17 +95,12 @@ class PlanningTest(unittest.TestCase):
         self.assertFalse(scope["emotion_controls"])
         self.assertFalse(scope["teacher_distillation"])
         self.assertFalse(scope["other_speaker_training_audio"])
-        self.assertFalse(any("emotion" in key for key in planner.parameter_estimate(config)))
-        self.assertIn("train_vocoder_from_random_init", config["training"]["stages"])
+        self.assertFalse(any("emotion" in key for key in config["architecture"]))
 
-    def test_rejects_oversized_architecture_and_cache(self):
+    def test_rejects_oversized_architecture(self):
         config = json.loads((ROOT / "configs/mac_training.json").read_text())
         with patch.object(planner, "command", return_value=None):
-            config["architecture_candidate"]["flow_layers"] = 100
-            with self.assertRaises(ValueError):
-                planner.build_report(config)
-            config["architecture_candidate"]["flow_layers"] = 12
-            config["storage"]["temporary_bytes"] = 1_000_000_000
+            config["architecture"]["decoder_layers"] = 40
             with self.assertRaises(ValueError):
                 planner.build_report(config)
 

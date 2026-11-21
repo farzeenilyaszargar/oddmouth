@@ -15,7 +15,7 @@
 
 The user resumed work under these instructions. DailyTalk remains the default while source selection and listening approval are open.
 
-The user tests voice progress by entering their own text at `http://localhost:3000/training/`. Training is stopped for listening feedback. The local preview offers DailyTalk acoustic steps 184 and 42, both paired with vocoder step 160. The latest run advanced 142 acoustic updates and stopped early when macOS reported elevated memory pressure. For future runs, export the checkpoint pair as described in `web/README.md`, leave previous exports available for comparison, and wait for the user's listening feedback. Keep checkpoints and exports local.
+The user tests voice progress by entering their own text at `http://localhost:3000/training/`. Training is stopped for listening feedback. The local preview offers DailyTalk acoustic steps 264, 184, and 42, each paired with vocoder step 160. The latest run resumed at step 184 and completed 80 CPU updates in about 28 seconds at the configured 25% CPU share. The previous MPS run stopped early under elevated macOS memory pressure. For future runs, export the checkpoint pair as described in `web/README.md`, leave previous exports available for comparison, and wait for the user's listening feedback. Keep checkpoints and exports local.
 
 Done and pushed:
 - 14.56M model in `oddmouth/model.py`: 8.61M Matcha-style acoustic model and 5.95M Vocos-style vocoder. Discriminators (2.85M) are used in training only.

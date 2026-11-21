@@ -13,6 +13,7 @@ export default function Home() {
   const audio = useRef<HTMLAudioElement>(null);
   const about = useRef<HTMLDialogElement>(null);
   const [text, setText] = useState(SAMPLE);
+  const [editing, setEditing] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(5);
@@ -47,13 +48,13 @@ export default function Home() {
         <div className="workspace">
           <div className="intro"><h1>Small model. Big mouth.</h1><p>Free text to speech.</p></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
-            <SpeakingMouth audio={audio} playing={playing} time={time} /><Mouth className="still-mouth" />
+            <SpeakingMouth audio={audio} playing={playing} time={time} duration={duration} editing={editing} /><Mouth className="still-mouth" />
           </div>
 
           <section className="studio" aria-label="Text to speech demo">
             <div className="editor">
               <div className="editor-top"><label htmlFor="words">Your words</label><span>Demo</span></div>
-              <textarea id="words" value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder="Give me something to say." spellCheck={false} />
+              <textarea onFocus={() => setEditing(true)} onBlur={() => setEditing(false)} id="words" value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder="Give me something to say." spellCheck={false} />
               <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><button className="text-button" onClick={reset}>Reset sample</button></div>
             </div>
             <div className="player">

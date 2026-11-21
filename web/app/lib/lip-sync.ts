@@ -1,4 +1,4 @@
-export type MouthPose = 'smile' | 'closed' | 'teeth' | 'open' | 'wide' | 'round' | 'pucker' | 'bite' | 'tongue';
+export type MouthPose = 'smile' | 'smirk' | 'closed' | 'teeth' | 'open' | 'wide' | 'round' | 'pucker' | 'bite' | 'tongue';
 export type MouthCue = { start: number; end: number; value: string };
 
 // Rhubarb's sound groups, mapped to this character's original vector artwork.

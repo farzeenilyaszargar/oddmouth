@@ -1,12 +1,55 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
 import type { MouthPose } from './lib/lip-sync';
 
-type MouthProps = { pose?: MouthPose; className?: string };
+type MouthProps = { pose?: MouthPose; className?: string; trackEyes?: boolean };
 
 // Original vector artwork based on the supplied three-tooth face. The sound
 // groups follow Rhubarb's A-H/X convention; recognition remains approximate.
-export default function Mouth({ pose = 'smile', className = '' }: MouthProps) {
+export default function Mouth({ pose = 'smile', className = '', trackEyes = false }: MouthProps) {
+  const face = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    if (!trackEyes) return;
+    let frame = 0;
+    let pointer = { x: 0, y: 0 };
+    const follow = () => {
+      frame = 0;
+      const element = face.current;
+      if (!element) return;
+      const bounds = element.getBoundingClientRect();
+      const dx = pointer.x - (bounds.left + bounds.width / 2);
+      const dy = pointer.y - (bounds.top + bounds.height * .175);
+      const distance = Math.hypot(dx, dy);
+      const strength = Math.min(distance / 160, 1);
+      element.style.setProperty('--gaze-x', `${distance ? dx / distance * strength * 13 : 0}px`);
+      element.style.setProperty('--gaze-y', `${distance ? dy / distance * strength * 9 : 0}px`);
+    };
+    const move = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return;
+      pointer = { x: event.clientX, y: event.clientY };
+      if (!frame) frame = requestAnimationFrame(follow);
+    };
+    const reset = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      face.current?.style.setProperty('--gaze-x', '0px');
+      face.current?.style.setProperty('--gaze-y', '0px');
+    };
+    const leave = (event: PointerEvent) => { if (!event.relatedTarget) reset(); };
+    window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('pointerout', leave);
+    window.addEventListener('blur', reset);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerout', leave);
+      window.removeEventListener('blur', reset);
+    };
+  }, [trackEyes]);
   const teeth = <path d="M60 82L120 92C119 130 59 134 60 82ZM130 94Q160 100 190 94C194 140 126 140 130 94ZM200 92L260 82C261 134 201 130 200 92Z" fill="white" />;
   const expressions = {
+    smirk: <g><path d="M24 114Q125 140 294 78C299 146 208 185 151 177Q65 169 24 114Z" fill="currentColor" /><path d="M153 117L196 107L191 132Q170 143 153 117ZM207 104L253 90Q251 126 228 132Q211 128 207 104Z" fill="white" /><path d="M283 73Q297 70 303 82" stroke="currentColor" strokeWidth="5" strokeLinecap="round" /></g>,
     smile: <g><path d="M20 93C12 51 76 77 128 84Q160 91 192 84C244 77 308 51 300 93C312 150 225 190 160 190C95 190 8 150 20 93Z" fill="currentColor" />{teeth}</g>,
     closed: <g><path d="M35 111Q160 142 285 111" stroke="currentColor" strokeWidth="12" strokeLinecap="round" /><path d="M130 142Q160 149 190 142" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></g>,
     teeth: <g><path d="M21 92Q28 61 100 80Q160 99 220 80Q292 61 299 92Q312 157 160 176Q8 157 21 92Z" fill="currentColor" /><path d="M51 89Q160 125 269 89L260 127Q160 164 60 127Z" fill="white" /><path d="M104 103L103 143M158 110V150M215 103L216 143M56 113Q160 145 264 113" stroke="currentColor" strokeWidth="5" /></g>,
@@ -17,8 +60,8 @@ export default function Mouth({ pose = 'smile', className = '' }: MouthProps) {
     bite: <g><path d="M38 100Q160 72 282 100Q280 155 160 163Q40 155 38 100Z" fill="currentColor" /><path d="M65 99Q160 84 255 99L243 129Q160 147 77 129Z" fill="white" /><path d="M125 94V133M192 94V133M59 129Q160 156 261 129" stroke="currentColor" strokeWidth="5" strokeLinecap="round" /></g>,
     tongue: <g><path d="M43 94Q160 61 277 94C283 150 221 182 160 182C99 182 37 150 43 94Z" fill="currentColor" /><path d="M79 89L127 94L122 115Q90 123 79 89ZM137 96H183L180 116H140ZM193 94L241 89Q230 123 198 115Z" fill="white" /><path d="M121 162C111 132 134 113 160 113C186 113 209 132 199 162Q160 184 121 162Z" fill="white" /><path d="M160 117V141" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></g>,
   };
-  return <svg className={`mouth ${className}`} data-pose={pose} viewBox="0 0 320 200" fill="none" aria-hidden="true">
-    <g className="eyes"><circle cx="76" cy="35" r="16" fill="currentColor" /><circle cx="244" cy="35" r="16" fill="currentColor" /></g>
+  return <svg ref={face} className={`mouth ${trackEyes ? 'living-mouth' : ''} ${className}`} data-pose={pose} viewBox="0 0 320 200" fill="none" aria-hidden="true">
+    <g className="eyes"><g className="eye-blink"><circle cx="76" cy="35" r="16" fill="currentColor" /><circle cx="244" cy="35" r="16" fill="currentColor" /></g></g>
     {expressions[pose]}
   </svg>;
 }

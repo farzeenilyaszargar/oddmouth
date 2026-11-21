@@ -35,13 +35,16 @@ print(json.dumps(steps))
     return json.loads(subprocess.check_output([PYTHON, '-c', code], cwd=ROOT, text=True))
 
 
-def choose_part(steps, targets, warmup, size):
+def choose_part(steps, targets, warmup, size, vocoder_ratio=None):
+    """Pick the stage that is furthest behind. vocoder_ratio is the number of
+    vocoder steps scheduled per acoustic step (default: the ratio of the caps)."""
     available = [stage for stage in STAGES if steps[stage] < targets[stage]]
     if not available:
         return None
     if steps['vocoder'] < min(warmup, targets['vocoder']):
         return 'vocoder', min(size, warmup - steps['vocoder'], targets['vocoder'] - steps['vocoder'])
-    stage = min(available, key=lambda name: steps[name] / targets[name])
+    weights = targets if vocoder_ratio is None else {'acoustic': 1.0, 'vocoder': vocoder_ratio}
+    stage = min(available, key=lambda name: steps[name] / weights[name])
     return stage, min(size, targets[stage] - steps[stage])
 
 
@@ -141,7 +144,7 @@ def run(args):
                     break
                 time.sleep(1)
             continue
-        part = choose_part(steps, targets, warmup, args.chunk_steps)
+        part = choose_part(steps, targets, warmup, args.chunk_steps, args.vocoder_ratio)
         if sum(steps.values()) - last_preview >= args.preview_interval or part is None:
             status('exporting_preview', steps=steps, targets=targets)
             try:
@@ -181,7 +184,11 @@ def main():
     parser.add_argument('--chunk-steps', type=int, default=1000)
     parser.add_argument('--minutes-per-part', type=float, default=5)
     parser.add_argument('--preview-interval', type=int, default=5000)
+    parser.add_argument('--vocoder-ratio', type=float, default=None,
+                        help='Vocoder steps per acoustic step (default: ratio of the step caps, 2.0)')
     args = parser.parse_args()
+    if args.vocoder_ratio is not None and args.vocoder_ratio <= 0:
+        parser.error('--vocoder-ratio must be positive')
     if min(args.chunk_steps, args.minutes_per_part, args.preview_interval) <= 0:
         parser.error('Part and preview limits must be positive')
     RUNS.mkdir(exist_ok=True)

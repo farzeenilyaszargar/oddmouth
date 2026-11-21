@@ -15,7 +15,7 @@
 
 The user resumed work under these instructions. DailyTalk remains the default while source selection and listening approval are open.
 
-The current goal is continuous staged training. Do not wait for feedback between parts. `scripts/train_in_parts.py` continues the existing DailyTalk checkpoints toward the configured caps and writes periodic localhost previews. Before launching another process, check the existing runner and its child, along with `runs/continuous.log` and `runs/continuous-status.json`. On 2026-11-21 the runner started from acoustic step 264 and vocoder step 560 on CPU. The user can audition exported checkpoint pairs at `http://localhost:3000/training/`. Keep checkpoints and audio local.
+The current goal is continuous staged training. Do not wait for feedback between parts. `scripts/train_in_parts.py` continues the existing DailyTalk checkpoints toward the configured caps and writes periodic localhost previews. Before launching another process, check the existing runner and its child, along with `runs/continuous.log` and `runs/continuous-status.json`. On 2026-11-21 the runner started from acoustic step 264 and vocoder step 560 on CPU. On 2026-11-22 (local time) it was restarted at acoustic 6,832 / vocoder 13,743 with `--vocoder-ratio 0.5` (two acoustic steps per vocoder step), because the user heard robotic speech and the acoustic model drives intelligibility. Restart it with the same flag; stop it with SIGINT so it saves. The user can audition exported checkpoint pairs at `http://localhost:3000/training/`. Keep checkpoints and audio local.
 
 Done and pushed:
 - 14.56M model in `oddmouth/model.py`: 8.61M Matcha-style acoustic model and 5.95M Vocos-style vocoder. Discriminators (2.85M) are used in training only.

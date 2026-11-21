@@ -29,6 +29,15 @@ export default function Home() {
     catch { setError('Couldn’t play the sample. Try downloading it instead.'); }
   }
 
+  async function generateDemo() {
+    const player = audio.current;
+    if (!player) return;
+    player.currentTime = 0;
+    setTime(0);
+    try { await player.play(); setError(''); }
+    catch { setError('Couldn’t play the sample. Try downloading it instead.'); }
+  }
+
   function reset() {
     setText(SAMPLE);
     audio.current?.pause();
@@ -46,7 +55,7 @@ export default function Home() {
 
       <main>
         <div className="workspace">
-          <div className="intro"><h1>Small model. Big mouth.</h1><p>Free text to speech.</p></div>
+          <div className="intro"><p>Oddmouth is a free text-to-speech project for turning written words into spoken audio. Try the web demo, watch the character follow the voice, and download the five-second sample. Custom speech generation is coming next.</p></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
             <SpeakingMouth audio={audio} playing={playing} time={time} duration={duration} editing={editing} /><Mouth className="still-mouth" />
           </div>
@@ -55,7 +64,7 @@ export default function Home() {
             <div className="editor">
               <div className="editor-top"><label htmlFor="words">Your words</label><span>Demo</span></div>
               <textarea onFocus={() => setEditing(true)} onBlur={() => setEditing(false)} id="words" value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder="Give me something to say." spellCheck={false} />
-              <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><button className="text-button" onClick={reset}>Reset sample</button></div>
+              <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><div className="editor-actions"><button className="text-button" onClick={reset}>Reset sample</button><button className="generate-button" onClick={generateDemo} disabled={!text.trim()} aria-describedby="demo-note">Generate demo</button></div></div>
             </div>
             <div className="player">
               <button className="play" onClick={playPause} aria-label={playing ? 'Pause demo' : 'Play demo'}>
@@ -66,7 +75,7 @@ export default function Home() {
             </div>
             <audio ref={audio} src="/audio/oddmouth-demo.wav" preload="metadata" onPlay={() => setPlaying(true)} onPause={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onEnded={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onTimeUpdate={event => setTime(event.currentTarget.currentTime)} onLoadedMetadata={event => { if (Number.isFinite(event.currentTarget.duration)) setDuration(event.currentTarget.duration); }} onError={() => setError('The sample couldn’t load. Please refresh and try again.')} />
           </section>
-          <p className="demo-note" role="status">{error || (edited ? 'Custom speech generation is not available yet.' : 'Demo recording. 5 seconds.')}</p>
+          <p id="demo-note" className="demo-note" role="status">{error || (edited ? 'Demo only. Plays the sample, not your edited text.' : 'Demo only. Plays a prerecorded five-second sample.')}</p>
         </div>
       </main>
 

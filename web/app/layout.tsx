@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     type: 'website', locale: 'en_US', siteName: 'Oddmouth',
     title: siteTitle, description: siteDescription,
     ...(siteUrl ? { url: siteUrl.href } : {}),
-    images: [{ url: '/social-card.png', width: 1200, height: 630, alt: 'Oddmouth. Small model. Big mouth. Free text to speech.' }],
+    images: [{ url: '/social-card.png', width: 1200, height: 630, alt: 'Oddmouth text-to-speech demo. Listen to a voice sample and download the audio.' }],
   },
   twitter: {
     card: 'summary_large_image', title: siteTitle, description: siteDescription,

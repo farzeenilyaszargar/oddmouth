@@ -15,3 +15,7 @@ dependencies = [
 
 [project.optional-dependencies]
 prepare = []
+browser = [
+    "onnx>=1.18,<2",
+    "onnxruntime>=1.20,<2",
+]

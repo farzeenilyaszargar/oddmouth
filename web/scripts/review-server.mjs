@@ -6,22 +6,25 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pipeline } from 'node:stream/promises';
 
+const runtime = fileURLToPath(new URL('../node_modules/onnxruntime-web/dist/', import.meta.url));
 const root = fileURLToPath(new URL('../../outputs/training-review/', import.meta.url));
 
 createServer(async (req, res) => {
   const path = req.url?.split('?')[0] ?? '';
-  if (!['GET', 'HEAD'].includes(req.method) ||
-      !/^\/(?:index\.json|[a-zA-Z0-9_-]+\/[1-3]-(?:reference|output)\.wav)$/.test(path)) {
+  const runtimeAsset = /^\/runtime\/(ort-wasm-simd-threaded\.(?:mjs|wasm))$/.exec(path);
+  const reviewAsset = /^\/(?:index\.json|[a-zA-Z0-9_-]+\/(?:[1-3]-(?:reference|output)\.wav|model\/(?:model\.json|(?:text|flow|vocoder)\.onnx)))$/.test(path);
+  if (!['GET', 'HEAD'].includes(req.method) || (!runtimeAsset && !reviewAsset)) {
     res.writeHead(404).end();
     return;
   }
-  const file = join(root, path);
+  const file = runtimeAsset ? join(runtime, runtimeAsset[1]) : join(root, path);
   let size;
   try { ({ size } = await stat(file)); } catch { res.writeHead(404).end(); return; }
-  const wav = path.endsWith('.wav');
+  const types = { wav: 'audio/wav', json: 'application/json', wasm: 'application/wasm', mjs: 'text/javascript' };
+  const extension = path.split('.').pop();
   const headers = {
-    'Content-Type': wav ? 'audio/wav' : 'application/json',
-    'Cache-Control': wav ? 'private, max-age=86400' : 'no-store',
+    'Content-Type': types[extension] ?? 'application/octet-stream',
+    'Cache-Control': extension === 'json' ? 'no-store' : 'private, max-age=86400',
     'Accept-Ranges': 'bytes',
   };
   let start = 0;

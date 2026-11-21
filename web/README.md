@@ -11,16 +11,22 @@ npm test           # lip-sync cue tests
 npm run typecheck
 ```
 
-## Local training review
+## Try saved checkpoints locally
 
-From the repository root, export a saved run with
-`uv run python scripts/export_review.py --stage vocoder --run runs/vocoder`.
-Use `--stage acoustic --run runs/acoustic` after saving an acoustic checkpoint.
-In a second terminal under `web/`, run `node scripts/review-server.mjs` alongside
-`npm run dev`, then open [Training review](http://localhost:3000/training/).
-Choose a run and play each reference beside its model output. Refresh after
-exporting another checkpoint. Review files live in ignored `outputs/` and are
-served only through the local development site.
+Run these commands from the repository root after saving both checkpoints:
+
+```sh
+uv sync --extra browser
+uv run python scripts/export_review.py --stage acoustic --run runs/acoustic
+uv run --extra browser python scripts/export_browser.py --review-id acoustic-acoustic-0000042
+```
+
+Use the review ID printed by the first script. In two terminals under `web/`,
+run `node scripts/review-server.mjs` and `npm run dev`. Open
+[Test the voice](http://localhost:3000/training/), choose a checkpoint, and
+generate a short sentence. Refresh after exporting a new checkpoint. The
+browser uses the same seed for repeatable comparisons. Model files stay in
+ignored `outputs/` and are excluded from the production build.
 
 ## What's here
 

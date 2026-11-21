@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Mouth from './mouth';
+import SpeakingMouth from './speaking-mouth';
+import animation from '../demo/lip-sync.json';
 
-const SAMPLE = 'Some words are better out loud. Give your ideas a voice with Oddmouth.';
+const SAMPLE = animation.transcript;
 const clock = (seconds: number) => `0:${Math.floor(seconds).toString().padStart(2, '0')}`;
-const shapes = ['closed', 'round', 'wide', 'teeth', 'closed', 'wide', 'round', 'teeth', 'wide', 'closed', 'round', 'wide', 'teeth', 'closed', 'wide', 'round', 'wide', 'closed', 'teeth', 'round', 'wide', 'teeth', 'closed', 'wide', 'round', 'teeth', 'wide', 'closed', 'round', 'wide', 'teeth', 'closed', 'wide', 'round', 'closed'] as const;
+
 
 export default function Home() {
   const audio = useRef<HTMLAudioElement>(null);
@@ -16,19 +18,6 @@ export default function Home() {
   const [duration, setDuration] = useState(5);
   const [error, setError] = useState('');
   const edited = text !== SAMPLE;
-  const pose = time > 0 && time < 4.4 ? shapes[Math.min(Math.floor(time * 8), shapes.length - 1)] : 'smile';
-
-  useEffect(() => {
-    if (!playing) return;
-    let frame = 0;
-    let previous = 0;
-    const tick = (now: number) => {
-      if (now - previous > 80) { setTime(audio.current?.currentTime ?? 0); previous = now; }
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [playing]);
 
   async function playPause() {
     const player = audio.current;
@@ -58,7 +47,7 @@ export default function Home() {
         <div className="workspace">
           <div className="intro"><h1>Small model. Big mouth.</h1><p>Free text to speech. A voice for everyone.</p></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
-            <Mouth pose={pose} className="animated-mouth" /><Mouth className="still-mouth" />
+            <SpeakingMouth audio={audio} playing={playing} time={time} /><Mouth className="still-mouth" />
             <span className="character-caption">{playing ? 'A little odd. A lot to say.' : 'Go on. Make me talk.'}</span>
           </div>
 
@@ -75,7 +64,7 @@ export default function Home() {
               <div className="track"><span className="track-label">{playing ? 'Speaking' : 'Voice preview'}<span className="time">{clock(time)} / {clock(duration)}</span></span><input type="range" min="0" max={duration} step="0.01" value={time} aria-label="Seek demo audio" aria-valuetext={`${clock(time)} of ${clock(duration)}`} style={{ background: `linear-gradient(to right, #111 ${time / duration * 100}%, #e5e5e5 ${time / duration * 100}%)` }} onChange={event => { const value = Number(event.target.value); if (audio.current) audio.current.currentTime = value; setTime(value); }} /></div>
               <a className="download" href="/audio/oddmouth-demo.wav" download="oddmouth-demo.wav" aria-label="Download five-second demo WAV"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4" /></svg><span>Download</span></a>
             </div>
-            <audio ref={audio} src="/audio/oddmouth-demo.wav" preload="metadata" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onTimeUpdate={event => setTime(event.currentTarget.currentTime)} onLoadedMetadata={event => { if (Number.isFinite(event.currentTarget.duration)) setDuration(event.currentTarget.duration); }} onError={() => setError('The sample couldn’t load. Please refresh and try again.')} />
+            <audio ref={audio} src="/audio/oddmouth-demo.wav" preload="metadata" onPlay={() => setPlaying(true)} onPause={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onEnded={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onTimeUpdate={event => setTime(event.currentTarget.currentTime)} onLoadedMetadata={event => { if (Number.isFinite(event.currentTarget.duration)) setDuration(event.currentTarget.duration); }} onError={() => setError('The sample couldn’t load. Please refresh and try again.')} />
           </section>
           <p className="demo-note" role="status">{error || (edited ? 'Your text is ready. Custom voice generation is coming soon.' : 'A five-second sample. The Oddmouth voice is on its way.')}</p>
         </div>
@@ -86,7 +75,7 @@ export default function Home() {
         <div className="dialog-top"><Mouth /><button aria-label="Close about" onClick={() => about.current?.close()}>✕</button></div>
         <h2 id="about-title">A little odd.<br />A lot to say.</h2>
         <p>Oddmouth is building a small, free text-to-speech model for everyone. Simple words in. A voice out. No sign-up, no paywall.</p>
-        <p>For now, this is an interactive demo with a pre-recorded sample. The face moves with playback; its expressions are illustrative. Precise mouth movements for enunciation are planned.</p>
+        <p>For now, this is an interactive demo with a pre-recorded sample. The mouth shapes follow sounds detected in the recording, including rounded vowels, closed lips, and pauses. The lip sync is approximate, not pronunciation instruction.</p>
         <a href="https://github.com/farzeenilyaszargar/oddmouth" target="_blank" rel="noreferrer">Follow the build on GitHub</a>
       </dialog>
     </div>

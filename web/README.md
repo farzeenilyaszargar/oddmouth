@@ -16,7 +16,7 @@ Open http://localhost:3000. For production, run `npm run build`; the static site
 
 - Editable text, a 1,000-character input limit, character count, and reset.
 - A bundled five-second WAV, play/pause, seeking, replay, and download.
-- A vector face based on the supplied logo reference, with discrete mouth poses driven by audio playback time. Pausing freezes the pose, seeking changes it, and reset returns the smile. These expressions are illustrative, not phoneme-aligned enunciation guidance.
+- A vector face with nine sound-specific mouth poses, driven by audio-aligned cues extracted from the recording with Rhubarb Lip Sync. Pausing freezes the pose, seeking selects the matching sound, and silence/reset returns the smile. Alignment is automatic and approximate, not validated pronunciation instruction.
 - Reduced-motion preferences show the static logo instead.
 - An accessible native About dialog, dismissible with its close button, Escape, or the backdrop.
 - A 100svh shell keeps the navbar and footer in one viewport. The central workspace can scroll internally on unusually short screens or at high text zoom.
@@ -38,6 +38,21 @@ ffmpeg -y -i /tmp/oddmouth-demo.aiff -af apad -t 5 -ar 22050 -ac 1 public/audio/
 
 Output: mono PCM WAV, 22,050 Hz, exactly five seconds including trailing silence. This fixture does not establish Oddmouth voice quality, model size, or inference performance. Replace it with a licensed final voice audition before launch.
 
+## Speech-driven mouth animation
+
+`demo/lip-sync.json` contains 38 timestamped mouth cues extracted from the actual demo WAV with [Rhubarb Lip Sync 1.14.0](https://github.com/DanielSWolf/rhubarb-lip-sync/releases/tag/v1.14.0), using its English PocketSphinx recognizer and the exact transcript in `demo/transcript.txt`. The file records the audio SHA-256 so changed recordings cannot silently reuse old timings.
+
+The A–H/X cues drive nine vector expressions: closed lips, clenched teeth, open, wide open, rounded, puckered, teeth on the lip, raised tongue, and resting smile. The animation reads the media clock on each animation frame and renders only when the pose changes. It does not use a repeating animation timer. Reduced-motion preferences retain the static face.
+
+To regenerate, download and extract the official Rhubarb release outside the repository, then run from `web/`:
+
+```sh
+npm run lip-sync -- /absolute/path/to/rhubarb
+npm test
+```
+
+The generator reads only the bundled fixture and transcript, strips machine-specific paths from its output, and records the generator version. Rhubarb binaries and recognizer models stay outside Git. The runtime only needs the small JSON cue file, with no speech recognition downloads. Tests check the audio fingerprint, continuous cue coverage, sound mapping, seeking boundaries, and rest intervals.
+
 ## Model integration
 
-Connect an actual inference pipeline before presenting custom speech generation. Keep the current demo label until the player receives audio synthesized from the submitted text. Model weights, bulk audio, and checkpoints belong in artifact storage, not this frontend or ordinary Git.
+Connect an actual inference pipeline before presenting custom speech generation. Keep the current demo label until the player receives audio synthesized from the submitted text. New generated recordings must include their own timing cues (from inference phoneme timing or a separate alignment step); the current cues apply only to the demo WAV. Model weights, bulk audio, and checkpoints belong in artifact storage, not this frontend or ordinary Git.

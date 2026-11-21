@@ -1,0 +1,200 @@
+{
+  "generator": "Rhubarb Lip Sync version 1.14.0",
+  "source": "https://github.com/DanielSWolf/rhubarb-lip-sync",
+  "audio": "/audio/oddmouth-demo.wav",
+  "audioSha256": "952406955da779421b8ce935e5852f93585f8cd2b1502be20ea4736d8a837479",
+  "transcript": "Some words are better out loud. Give your ideas a voice with Oddmouth.",
+  "duration": 5,
+  "mouthCues": [
+    {
+      "start": 0,
+      "end": 0.04,
+      "value": "X"
+    },
+    {
+      "start": 0.04,
+      "end": 0.12,
+      "value": "B"
+    },
+    {
+      "start": 0.12,
+      "end": 0.19,
+      "value": "C"
+    },
+    {
+      "start": 0.19,
+      "end": 0.29,
+      "value": "A"
+    },
+    {
+      "start": 0.29,
+      "end": 0.34,
+      "value": "F"
+    },
+    {
+      "start": 0.34,
+      "end": 0.39,
+      "value": "E"
+    },
+    {
+      "start": 0.39,
+      "end": 0.6,
+      "value": "B"
+    },
+    {
+      "start": 0.6,
+      "end": 0.67,
+      "value": "D"
+    },
+    {
+      "start": 0.67,
+      "end": 0.75,
+      "value": "A"
+    },
+    {
+      "start": 0.75,
+      "end": 0.84,
+      "value": "C"
+    },
+    {
+      "start": 0.84,
+      "end": 0.91,
+      "value": "B"
+    },
+    {
+      "start": 0.91,
+      "end": 1.05,
+      "value": "E"
+    },
+    {
+      "start": 1.05,
+      "end": 1.12,
+      "value": "C"
+    },
+    {
+      "start": 1.12,
+      "end": 1.19,
+      "value": "B"
+    },
+    {
+      "start": 1.19,
+      "end": 1.4,
+      "value": "H"
+    },
+    {
+      "start": 1.4,
+      "end": 1.47,
+      "value": "C"
+    },
+    {
+      "start": 1.47,
+      "end": 1.68,
+      "value": "B"
+    },
+    {
+      "start": 1.68,
+      "end": 1.84,
+      "value": "X"
+    },
+    {
+      "start": 1.84,
+      "end": 2.1,
+      "value": "B"
+    },
+    {
+      "start": 2.1,
+      "end": 2.17,
+      "value": "G"
+    },
+    {
+      "start": 2.17,
+      "end": 2.31,
+      "value": "F"
+    },
+    {
+      "start": 2.31,
+      "end": 2.38,
+      "value": "C"
+    },
+    {
+      "start": 2.38,
+      "end": 2.66,
+      "value": "B"
+    },
+    {
+      "start": 2.66,
+      "end": 2.73,
+      "value": "C"
+    },
+    {
+      "start": 2.73,
+      "end": 2.8,
+      "value": "B"
+    },
+    {
+      "start": 2.8,
+      "end": 2.87,
+      "value": "C"
+    },
+    {
+      "start": 2.87,
+      "end": 2.94,
+      "value": "G"
+    },
+    {
+      "start": 2.94,
+      "end": 3.08,
+      "value": "E"
+    },
+    {
+      "start": 3.08,
+      "end": 3.22,
+      "value": "B"
+    },
+    {
+      "start": 3.22,
+      "end": 3.29,
+      "value": "F"
+    },
+    {
+      "start": 3.29,
+      "end": 3.43,
+      "value": "B"
+    },
+    {
+      "start": 3.43,
+      "end": 3.5,
+      "value": "D"
+    },
+    {
+      "start": 3.5,
+      "end": 3.64,
+      "value": "B"
+    },
+    {
+      "start": 3.64,
+      "end": 3.72,
+      "value": "A"
+    },
+    {
+      "start": 3.72,
+      "end": 3.76,
+      "value": "C"
+    },
+    {
+      "start": 3.76,
+      "end": 3.8,
+      "value": "E"
+    },
+    {
+      "start": 3.8,
+      "end": 3.87,
+      "value": "B"
+    },
+    {
+      "start": 3.87,
+      "end": 5,
+      "value": "X"
+    }
+  ]
+}

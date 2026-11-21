@@ -235,6 +235,7 @@ def main():
     last_save = began
     stop_step = step + args.steps if args.steps else total_steps
     last_log = began
+    logged_from_step = step
     totals = {}
     try:
         while step < stop_step:
@@ -320,11 +321,13 @@ def main():
                 totals[key] = totals.get(key, 0.0) + float(value.detach())
             if step % args.log_every == 0:
                 sync(device)
-                row = {'step': step, 'epoch': epoch, **{k: v / args.log_every for k, v in totals.items()},
+                updates = step - logged_from_step
+                row = {'step': step, 'epoch': epoch, **{k: v / updates for k, v in totals.items()},
                        'grad_norm': float(grad), 'lr': scheduler.get_last_lr()[0],
-                       'seconds_per_step': (time.monotonic() - last_log) / args.log_every,
+                       'seconds_per_step': (time.monotonic() - last_log) / updates,
                        'mps_bytes': memory(device)}
                 last_log = time.monotonic()
+                logged_from_step = step
                 totals = {}
                 with (run / 'metrics.jsonl').open('a') as log:
                     log.write(json.dumps(row) + '\n')

@@ -19,7 +19,13 @@ export const metadata: Metadata = {
   applicationName: 'Oddmouth',
   ...(siteUrl ? { alternates: { canonical: siteUrl.href } } : {}),
   robots: { index: indexable, follow: indexable },
-  icons: { icon: '/icon.svg' },
+  icons: {
+    icon: [
+      { url: '/icon.svg?v=square-2', type: 'image/svg+xml', sizes: 'any' },
+      { url: '/favicon.ico?v=square-2', sizes: '32x32' },
+    ],
+    shortcut: '/favicon.ico?v=square-2',
+  },
   openGraph: {
     type: 'website', locale: 'en_US', siteName: 'Oddmouth',
     title: siteTitle, description: siteDescription,

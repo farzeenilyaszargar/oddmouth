@@ -47,7 +47,7 @@ export default function Home() {
 
       <main>
         <div className="workspace">
-          <div className="hero"><div className="intro"><h1>Your words.<span>Out loud.</span></h1><p>Free text to speech.</p></div>
+          <div className="hero"><div className="intro"><h1>Free text to speech<span>for stories, scripts, and everyday ideas.</span></h1></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
             <SpeakingMouth audio={audio} playing={playing} time={time} duration={duration} editing={editing} /><Mouth className="still-mouth" />
           </div></div>

@@ -6,13 +6,14 @@ The target is a complete deployed neural pipeline of approximately 50 million pa
 
 ## Current status
 
-Research and planning are complete. Model selection, voice auditioning, training, and browser benchmarks are the next implementation steps. No custom model has been trained yet, and ElevenLabs-level quality has not been demonstrated.
+Research and planning are complete. The first data candidate is **Hi-Fi TTS speaker 9017, John Van Stan**, with **58 hours of clean narration reported by its publisher**. See [the source details and streaming samples](DATA_SOURCE.md). The user has requested source identification only; no audio dataset has been downloaded. No custom model has been trained yet, and ElevenLabs-level quality has not been demonstrated.
 
 ## Project documents
 
 - [Research and implementation plan](VOICE_MODEL_PLAN.md)
 - [Research scope and unresolved experiments](RESEARCH_SCOPE.md)
 - [Initial evaluation prompts](VOICE_EVALUATION_PROMPTS.tsv)
+- [Single-speaker data source and streaming samples](DATA_SOURCE.md)
 
 ## Repository
 

@@ -223,3 +223,27 @@ textarea::placeholder { color: #aaa; }
 
 .about-dialog .maker { margin-top: 23px; color: var(--ink); }
 .about-dialog .maker a { display: inline; margin: 0; font-size: inherit; }
+
+.more-row { display: flex; justify-content: flex-end; padding: 7px 25px; border-top: 1px solid #ededed; background: #fafafa; }
+.more-button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: #777; font-size: 13px; padding: 5px 0; }
+.more-button:hover { color: #171717; }
+.more-button svg { width: 14px; height: 14px; transition: transform .2s; }
+.more-button[aria-expanded="true"] svg { transform: rotate(180deg); }
+.audio-options { border-top: 1px solid #ededed; padding: 20px 26px 17px; background: #fff; }
+.voice-effects { margin: 0 0 21px; border: 0; padding: 0; }
+.voice-effects legend { font-size: 14px; font-weight: 700; margin-bottom: 11px; }
+.voice-effects > div { display: flex; gap: 8px; }
+.voice-effects label { position: relative; cursor: pointer; }
+.voice-effects input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.voice-effects span { display: block; padding: 7px 15px; border: 1px solid #dedede; border-radius: 20px; font-size: 13px; }
+.voice-effects input:checked + span { background: #171717; border-color: #171717; color: #fff; }
+.voice-effects input:focus-visible + span { outline: 2px solid #171717; outline-offset: 3px; }
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 30px; }
+.options-grid > label { display: grid; grid-template-columns: 1fr auto; gap: 11px 8px; font-size: 13px; font-weight: 650; }
+.options-grid output { color: #888; font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.options-grid input, .options-grid select { grid-column: 1 / -1; width: 100%; min-width: 0; accent-color: #171717; }
+.options-grid input { margin: 0; cursor: pointer; }
+.options-grid select { border: 1px solid #ddd; border-radius: 8px; padding: 8px 12px; background: #fff; color: #333; font: inherit; }
+.audio-options > p { margin: 21px 0 0; color: #999; font-size: 11px; }
+.download[aria-disabled="true"] { opacity: .5; cursor: wait; }
+@media (max-width: 650px) { .more-row { padding-right: 19px; }.audio-options { padding: 20px 19px; }.options-grid { gap: 22px 20px; }.voice-effects span { padding: 7px 12px; } }

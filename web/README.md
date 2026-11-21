@@ -45,3 +45,9 @@ ffmpeg -y -i /tmp/demo.aiff -af apad -t 5 -ar 22050 -ac 1 public/audio/oddmouth-
 ```
 
 Replace it with real Oddmouth output once a model is trained and exported to ONNX.
+
+## Audio editing
+
+More opens a compact settings panel, hidden by default. It offers Natural, Radio, and Telephone voice filters, speed, volume, a low-pass filter, and synthesized rain or vinyl background textures with an adjustable level. Closing the panel keeps the settings.
+
+Edits run locally through `OfflineAudioContext`, with short input debouncing. Playback and download use the same rendered PCM WAV. Speed changes both duration and pitch; the mouth animation maps the edited playback position back to the source audio timing. Returning to the default settings uses the original fixture. Blob URLs are released when replaced or unmounted. No external sound files, audio uploads, or new model inference are involved.

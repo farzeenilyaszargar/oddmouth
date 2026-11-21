@@ -4,6 +4,9 @@ import { useRef, useState } from 'react';
 import Mouth from './mouth';
 import SpeakingMouth from './speaking-mouth';
 import animation from '../demo/lip-sync.json';
+import AudioOptions from './audio-options';
+import { DEFAULT_AUDIO } from './lib/audio-effects';
+import { useEditedAudio } from './use-edited-audio';
 
 const SAMPLE = animation.transcript;
 const clock = (seconds: number) => `0:${Math.floor(seconds).toString().padStart(2, '0')}`;
@@ -18,6 +21,9 @@ export default function Home() {
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(5);
   const [error, setError] = useState('');
+  const [more, setMore] = useState(false);
+  const [settings, setSettings] = useState(DEFAULT_AUDIO);
+  const editedAudio = useEditedAudio(audio, settings, setError);
 
   async function playPause() {
     const player = audio.current;
@@ -49,25 +55,27 @@ export default function Home() {
         <div className="workspace">
           <div className="hero"><div className="intro"><h1>Free text to speech<span>for stories, scripts, and everyday ideas.</span></h1></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
-            <SpeakingMouth audio={audio} playing={playing} time={time} duration={duration} editing={editing} /><Mouth className="still-mouth" />
+            <SpeakingMouth audio={audio} playing={playing} time={time} duration={duration} editing={editing} sourceRate={editedAudio.speed} /><Mouth className="still-mouth" />
           </div></div>
 
           <section className="studio" aria-label="Text to speech">
             <div className="editor">
               <div className="editor-top"><label htmlFor="words">Your text</label></div>
               <textarea onFocus={() => setEditing(true)} onBlur={() => setEditing(false)} id="words" value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder="Give me something to say." spellCheck={false} />
-              <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><button className="generate-button" onClick={generateDemo} disabled={!text.trim()} aria-describedby="demo-note"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M3 8v4m5-8v12m5-10v8m4-6v4" /></svg>Generate</button></div>
+              <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><button className="generate-button" onClick={generateDemo} disabled={!text.trim() || editedAudio.processing} aria-describedby="demo-note"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M3 8v4m5-8v12m5-10v8m4-6v4" /></svg>Generate</button></div>
             </div>
             <div className="player">
               <button className="play" onClick={playPause} aria-label={playing ? 'Pause audio' : 'Play audio'}>
                 {playing ? <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg> : <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5a1 1 0 0 1 1.5-.87l10 6.5a1 1 0 0 1 0 1.74l-10 6.5A1 1 0 0 1 8 18.5z" /></svg>}
               </button>
               <div className="track"><span className="track-label">{playing ? 'Speaking' : 'Voice preview'}<span className="time">{clock(time)} / {clock(duration)}</span></span><input type="range" min="0" max={duration} step="0.01" value={time} aria-label="Seek audio" aria-valuetext={`${clock(time)} of ${clock(duration)}`} style={{ background: `linear-gradient(to right, #111 ${time / duration * 100}%, #e5e5e5 ${time / duration * 100}%)` }} onChange={event => { const value = Number(event.target.value); if (audio.current) audio.current.currentTime = value; setTime(value); }} /></div>
-              <a className="download" href="/audio/oddmouth-demo.wav" download="oddmouth-demo.wav" aria-label="Download five-second sample WAV"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4" /></svg><span>Download</span></a>
+              <a className="download" href={editedAudio.url} download="oddmouth-audio.wav" aria-label="Download audio WAV" aria-disabled={editedAudio.processing} onClick={event => { if (editedAudio.processing) event.preventDefault(); }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4" /></svg><span>Download</span></a>
             </div>
-            <audio ref={audio} src="/audio/oddmouth-demo.wav" preload="metadata" onPlay={() => setPlaying(true)} onPause={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onEnded={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onTimeUpdate={event => setTime(event.currentTarget.currentTime)} onLoadedMetadata={event => { if (Number.isFinite(event.currentTarget.duration)) setDuration(event.currentTarget.duration); }} onError={() => setError('The sample couldn’t load. Please refresh and try again.')} />
+            <div className="more-row"><button className="more-button" aria-expanded={more} aria-controls="audio-options" onClick={() => setMore(!more)}>More<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg></button></div>
+            {more && <AudioOptions settings={settings} onChange={setSettings} />}
+            <audio ref={audio} src={editedAudio.url} preload="metadata" onPlay={() => setPlaying(true)} onPause={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onEnded={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onTimeUpdate={event => setTime(event.currentTarget.currentTime)} onLoadedMetadata={event => { if (Number.isFinite(event.currentTarget.duration)) setDuration(event.currentTarget.duration); void editedAudio.loaded(event.currentTarget); }} onError={() => setError('The sample couldn’t load. Please refresh and try again.')} />
           </section>
-          <p id="demo-note" className="demo-note" role="status">{error || 'Plays a sample until custom generation is ready.'}</p>
+          <p id="demo-note" className="demo-note" role="status">{error || (editedAudio.processing ? 'Applying audio settings...' : 'Plays a sample until custom generation is ready.')}</p>
         </div>
       </main>
 

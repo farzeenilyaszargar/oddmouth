@@ -11,6 +11,17 @@ npm test           # lip-sync cue tests
 npm run typecheck
 ```
 
+## Local training review
+
+From the repository root, export a saved run with
+`uv run python scripts/export_review.py --stage vocoder --run runs/vocoder`.
+Use `--stage acoustic --run runs/acoustic` after saving an acoustic checkpoint.
+In a second terminal under `web/`, run `node scripts/review-server.mjs` alongside
+`npm run dev`, then open [Training review](http://localhost:3000/training/).
+Choose a run and play each reference beside its model output. Refresh after
+exporting another checkpoint. Review files live in ignored `outputs/` and are
+served only through the local development site.
+
 ## What's here
 
 - A text editor (1,000-character UI limit), with player controls and WAV download for the demo sample.

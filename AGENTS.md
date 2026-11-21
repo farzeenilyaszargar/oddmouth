@@ -15,6 +15,8 @@
 
 The user resumed work under these instructions. DailyTalk remains the default while source selection and listening approval are open.
 
+Training is reviewed in parts. Stop after each bounded run and wait for the user's listening feedback before starting the next. Export each saved run with `scripts/export_review.py` and make it available at `http://localhost:3000/training/`. Part 1 completed 160 DailyTalk vocoder updates from random weights. Its checkpoint and audio are local only. The next training part is pending the user's review.
+
 Done and pushed:
 - 14.56M model in `oddmouth/model.py`: 8.61M Matcha-style acoustic model and 5.95M Vocos-style vocoder. Discriminators (2.85M) are used in training only.
 - `scripts/prepare_dailytalk.py`, `scripts/train.py` (resumable, Ctrl-C safe, CPU-capped) and `scripts/speak.py`.

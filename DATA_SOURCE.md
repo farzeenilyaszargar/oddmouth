@@ -35,6 +35,8 @@ If selected later, preparation would identify one speaker across episodes, remov
 
 Choose performance style first, then verify speaker consistency, usable hours, sound quality, transcripts, and rights. Prefer suitable expressive data over filling an hours target with dull delivery. The user's preference remains above 50 hours; no smaller dataset is silently substituted.
 
+The user also requires explicit `[happy]` and `[angry]` controls. A candidate must therefore be assessed for emotion coverage in the same target voice, not just overall conversational quality. See `EXPRESSION_CONTROLS.md`. No current candidate has passed that coverage check.
+
 Training on neutral audiobooks may teach a small model to read competently without teaching the intended presentation style. A pretrained model's expressive ability can help adaptation, but a speed/pitch control or a style label alone does not establish convincing expressive generation. Any teacher-assisted style expansion must be tested rather than assumed to fix the mismatch.
 
 ## Historical candidate: Hi-Fi TTS (rejected for delivery)

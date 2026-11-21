@@ -32,5 +32,19 @@
     "mirror_repo": "MikhailT/hifi-tts",
     "mirror_revision": "f0a934ddf4e8da0fc6c53fb42fda2c9ac8ed93df",
     "rejection_reason": "User finds audiobook reading too dull for the intended expressive videos"
-  }
+  },
+  "required_emotion_tags": [
+    "neutral",
+    "happy",
+    "angry"
+  ],
+  "additional_target_emotion_tags": [
+    "sad",
+    "excited",
+    "calm",
+    "curious",
+    "surprised"
+  ],
+  "emotion_coverage_verified": false,
+  "expression_spec": "EXPRESSION_CONTROLS.md"
 }

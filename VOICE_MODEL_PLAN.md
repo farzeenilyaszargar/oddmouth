@@ -4,6 +4,8 @@ Research and implementation plan — 21 November 2026
 
 Current direction after listening feedback: the user wants expressive conversational YouTube presentation, not neutral audiobook delivery. Hi-Fi TTS speaker 9017 was rejected for performance style. See `DATA_SOURCE.md` for the revised source search; no replacement is approved and no voice dataset has been downloaded.
 
+Explicit `[happy]` and `[angry]` controls are also required. The emotion conditioning, data coverage, and evaluation plan in `EXPRESSION_CONTROLS.md` supersede the earlier suggestion to begin with only narration/conversation style labels.
+
 ## Recommendation
 
 Build an English, single-voice TTS product by adapting an existing small speech model. Start with Pocket TTS's 18.2M English variant and KittenTTS Micro 0.8 (40M), compare their voices and browser behavior, then select the training route. Keep Kokoro-82M as a larger quality reference. Use a trainable Matcha-TTS pipeline as the fallback if the small pretrained models cannot be adapted satisfactorily.

@@ -55,7 +55,7 @@ export default function Home() {
 
       <main>
         <div className="workspace">
-          <div className="intro"><p>Oddmouth is a free text-to-speech project for turning written words into spoken audio. Try the web demo, watch the character follow the voice, and download the five-second sample. Custom speech generation is coming next.</p></div>
+          <div className="intro"><h1>Free text to speech. Try the demo.</h1></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
             <SpeakingMouth audio={audio} playing={playing} time={time} duration={duration} editing={editing} /><Mouth className="still-mouth" />
           </div>

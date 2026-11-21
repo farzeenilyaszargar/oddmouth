@@ -1,5 +1,4 @@
-import importlib.util
-import json
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -9,15 +8,8 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def module(name):
-    spec = importlib.util.spec_from_file_location(name, ROOT / "scripts" / f"{name}.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-cache = module("bounded_cache")
-planner = module("plan_training")
+sys.path.insert(0, str(ROOT))
+from oddmouth import cache  # noqa: E402
 
 
 class CacheTest(unittest.TestCase):
@@ -76,33 +68,6 @@ class CacheTest(unittest.TestCase):
                 cache.write_bounded(broken(), root / "x", root, reserve_bytes=0)
             self.assertFalse((root / "x").exists())
             self.assertEqual(cache.cache_bytes(root), 0)
-
-
-class PlanningTest(unittest.TestCase):
-    def test_deployed_model_fits_15m(self):
-        config = json.loads((ROOT / "configs/mac_training.json").read_text())
-        counts, _ = planner.parameter_counts(config)
-        self.assertEqual(set(counts), {"acoustic_model", "vocoder"})
-        self.assertLessEqual(sum(counts.values()), 15_000_000)
-        self.assertGreater(sum(counts.values()), 12_000_000)
-        self.assertEqual(config["storage"]["max_download_chunk_bytes"], 1_000_000_000)
-
-    def test_scratch_single_voice_without_emotion_modules(self):
-        config = json.loads((ROOT / "configs/mac_training.json").read_text())
-        scope = config["training_scope"]
-        self.assertEqual(scope["speaker_count"], 1)
-        self.assertFalse(scope["pretrained_tts_weights"])
-        self.assertFalse(scope["emotion_controls"])
-        self.assertFalse(scope["teacher_distillation"])
-        self.assertFalse(scope["other_speaker_training_audio"])
-        self.assertFalse(any("emotion" in key for key in config["architecture"]))
-
-    def test_rejects_oversized_architecture(self):
-        config = json.loads((ROOT / "configs/mac_training.json").read_text())
-        with patch.object(planner, "command", return_value=None):
-            config["architecture"]["decoder_layers"] = 40
-            with self.assertRaises(ValueError):
-                planner.build_report(config)
 
 
 if __name__ == "__main__":

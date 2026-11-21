@@ -93,7 +93,7 @@ def main():
     parser.add_argument('--steps', type=int, default=None, help='Stop after this many more updates')
     parser.add_argument('--run', type=Path, default=None, help='Default: runs/<stage>')
     parser.add_argument('--data', type=Path, default=ROOT / 'data/dailytalk')
-    parser.add_argument('--config', type=Path, default=ROOT / 'configs/mac_training.json')
+    parser.add_argument('--config', type=Path, default=ROOT / 'configs/oddmouth.json')
     parser.add_argument('--device', choices=['mps', 'cpu'], default=None)
     parser.add_argument('--fresh', action='store_true', help='Ignore an existing checkpoint (refuses to overwrite)')
     parser.add_argument('--log-every', type=int, default=25)

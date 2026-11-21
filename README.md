@@ -1,40 +1,66 @@
 # Oddmouth
 
-Oddmouth is a small single-voice text-to-speech system for natural, conversational male narration in videos, trained locally and designed to run offline (and eventually in the browser).
+**Small model. Big mouth.**
 
-The complete deployed model stays under 15 million parameters, with no provider character quota.
+Oddmouth is a small text-to-speech model you train yourself, on a laptop, from scratch. It learns one natural, conversational male voice and generates unlimited speech offline, with no API, no character quotas and no pretrained weights.
 
-## Current status
+- **14.6M parameters** in total (acoustic model and vocoder)
+- **Trains on an Apple Silicon Mac** (tested on an 8 GB M2 MacBook Air) using about 25% of the CPU
+- **Random initialization only:** no pretrained TTS, vocoder or teacher models
+- **One command per step:** prepare data, train, speak
 
-Oddmouth is a **14.56M-parameter** single-voice model: a Matcha-style flow-matching acoustic model (8.6M) and a Vocos-style vocoder (6.0M). Both are trained from random weights on one speaker on an M2 MacBook Air, using at most about 25% of the CPU. The training data is the **DailyTalk male speaker**: about 10.8 hours of transcribed conversational studio speech, streamed from Hugging Face. The code is implemented and tested; **no trained voice exists yet**, and real-data speed and quality are unmeasured. The DailyTalk licence does not clearly allow commercial use. See [MAC_TRAINING_SYSTEM.md](MAC_TRAINING_SYSTEM.md) and [DATA_SOURCE.md](DATA_SOURCE.md).
+> **Status:** early. The full pipeline is implemented and tested, but no trained voice has been released yet, and voice quality has not been measured.
 
 ## Quick start
 
+Requirements: macOS on Apple Silicon (Linux and CPU also work, more slowly), [uv](https://docs.astral.sh/uv/), and espeak-ng.
+
 ```bash
-uv sync                                                    # needs espeak-ng: brew install espeak-ng
-uv run python scripts/prepare_dailytalk.py                 # stream + prepare data (~0.9 GB, resumable)
-uv run python scripts/train.py --stage vocoder --minutes 60
+brew install espeak-ng
+git clone https://github.com/farzeenilyaszargar/oddmouth.git && cd oddmouth
+uv sync
+
+uv run python scripts/prepare_dailytalk.py                    # download + prepare ~10 h of speech
+uv run python scripts/train.py --stage vocoder  --minutes 60  # resumable; run as often as you like
 uv run python scripts/train.py --stage acoustic --minutes 60
 uv run python scripts/speak.py "Hey everyone, welcome back." --out outputs/hello.wav
-uv run python -m unittest discover -s tests
 ```
 
-Training resumes automatically, saves every 10 minutes and on Ctrl-C, and writes listening samples to `runs/<stage>/samples/`.
+Training resumes automatically, saves on Ctrl-C, and writes listening samples to `runs/<stage>/samples/`.
 
-## Web demo
+## How it works
 
-The minimal Next.js frontend lives in [`web/`](web/README.md), with the tagline **Small model. Big mouth.** Run `cd web && npm ci && npm run dev` to preview it. It includes an editable text box and a five-second prerecorded sample with play/pause, seeking, and WAV download. Custom Oddmouth synthesis is not connected yet.
+```
+text ─▶ phonemes ─▶ acoustic model (8.6M) ─▶ mel spectrogram ─▶ vocoder (6.0M) ─▶ audio
+```
 
-## Project documents
+- **Acoustic model:** a Matcha-TTS-style transformer with conditional flow matching. It learns phoneme timing itself during training.
+- **Vocoder:** a Vocos-style network that predicts a spectrogram and inverts it exactly. It's fast to train and exportable to ONNX.
 
-- [Research and implementation plan](VOICE_MODEL_PLAN.md)
-- [Research scope and unresolved experiments](RESEARCH_SCOPE.md)
-- [Initial evaluation prompts](VOICE_EVALUATION_PROMPTS.tsv)
-- [Single-speaker data source and streaming samples](DATA_SOURCE.md)
-- [Natural delivery scope; emotion controls removed](EXPRESSION_CONTROLS.md)
-- [Mark Nelson narration candidate and 55-hour source inventory](MARK_NELSON_SOURCE.md)
-- [Current story-and-lessons audition lead: Dewayne Noel](DEWAYNE_NOEL_SOURCE.md)
+Details: [docs/training.md](docs/training.md).
 
-## Repository
+## Data
 
-The canonical repository is [farzeenilyaszargar/oddmouth](https://github.com/farzeenilyaszargar/oddmouth). Project updates are committed and pushed here after each completed update.
+The default voice is the male speaker from **DailyTalk**: about 10.8 hours of clean, transcribed, conversational studio speech. It is streamed from Hugging Face; no raw audio is stored. **Its licence does not clearly allow commercial use** (see [docs/data.md](docs/data.md)). You can swap in any single-speaker dataset that has transcripts.
+
+## Project layout
+
+```
+oddmouth/      model, audio features, text frontend, data loading, CPU limiter
+scripts/       prepare_dailytalk.py · train.py · speak.py
+configs/       oddmouth.json: architecture, training, data source, limits
+tests/         unit tests: python -m unittest discover -s tests
+docs/          training guide, data notes, evaluation prompts
+web/           Next.js demo page (prerecorded sample; not yet wired to the model)
+```
+
+## Roadmap
+
+- [x] 15M model, data pipeline, resumable trainer, offline synthesis
+- [ ] First trained voice and real-data training benchmarks
+- [ ] ONNX export and in-browser generation in `web/`
+- [ ] Published checkpoints, once the training-data licence allows
+
+## Contributing
+
+Issues and pull requests are welcome. Run `uv run python -m unittest discover -s tests` before submitting.

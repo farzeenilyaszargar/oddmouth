@@ -10,13 +10,24 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from oddmouth.audio import HOP, mel_spectrogram
 from oddmouth.model import (AcousticModel, Discriminators, InverseSTFT, Vocoder,
-                            monotonic_alignment, path_from_durations, sequence_mask)
+                            count, monotonic_alignment, path_from_durations, sequence_mask)
 from oddmouth.text import VOCAB_SIZE, encode, BLANK
 
-ARCH = json.loads((ROOT / "configs/mac_training.json").read_text())["architecture"]
+CONFIG = json.loads((ROOT / "configs/oddmouth.json").read_text())
+ARCH = CONFIG["architecture"]
 
 
 class ModelTest(unittest.TestCase):
+    def test_deployed_model_fits_parameter_limit(self):
+        total = count(AcousticModel(ARCH, VOCAB_SIZE)) + count(Vocoder(ARCH))
+        self.assertLessEqual(total, CONFIG["parameter_limit"])
+
+    def test_single_speaker_scratch_scope(self):
+        scope = CONFIG["training_scope"]
+        self.assertEqual(scope["speaker_count"], 1)
+        self.assertFalse(scope["pretrained_tts_weights"] or scope["teacher_distillation"]
+                         or scope["other_speaker_training_audio"] or scope["emotion_controls"])
+
     def test_inverse_stft_round_trip(self):
         x = torch.randn(2, HOP * 40) * 0.1
         padded = F.pad(x[:, None], (384, 384), mode="reflect")[:, 0]

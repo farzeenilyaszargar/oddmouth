@@ -1,5 +1,4 @@
 {
-  "status": "Implemented 15M-class design; training quality not yet measured",
   "parameter_limit": 15000000,
   "audio": {
     "sample_rate": 22050,
@@ -20,8 +19,7 @@
       "data/train-00003-of-00004.parquet"
     ],
     "original_dataset": "https://github.com/keonlee9420/DailyTalk",
-    "original_license": "CC-BY-SA-4.0 (authors' README says 'freely available for academic use with CC-BY-SA 4.0')",
-    "mirror_label_not_authoritative": "Mirror card says apache-2.0; the original dataset licence governs",
+    "original_license": "CC-BY-SA-4.0 (authors: for academic use); dialogue text from DailyDialog, CC-BY-NC-SA-4.0",
     "eval_clips": 150
   },
   "architecture": {
@@ -73,8 +71,7 @@
     "max_download_chunk_bytes": 1000000000,
     "managed_data_cache_bytes": 1000000000,
     "vocoder_wave_fraction": 0.2,
-    "minimum_free_disk_bytes": 5000000000,
-    "note": "Parquet row groups (~90 MB) are streamed into memory, never saved raw. Prepared features stay under the 1 GB managed cache; only a fraction of clips keep waveforms for vocoder training."
+    "minimum_free_disk_bytes": 5000000000
   },
   "training_scope": {
     "initialization": "random_for_all_deployed_neural_components",
@@ -84,6 +81,5 @@
     "teacher_distillation": false,
     "other_speaker_training_audio": false
   },
-  "cpu_share": 0.25,
-  "cpu_share_note": "User limit: use at most 20-30% of total CPU. Enforced by oddmouth/throttle.py in prepare and train."
+  "cpu_share": 0.25
 }

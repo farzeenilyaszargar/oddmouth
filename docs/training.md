@@ -1,0 +1,68 @@
+# Training Oddmouth
+
+## Model
+
+Oddmouth has two networks, trained separately and both from random weights.
+
+```
+text ─▶ espeak-ng phonemes ─▶ [ acoustic model ] ─▶ mel spectrogram ─▶ [ vocoder ] ─▶ audio
+```
+
+| Part | Design | Parameters |
+|---|---|---:|
+| Text encoder | 4 transformer blocks, width 192 | 1,820,928 |
+| Duration predictor | 2 conv layers, predicts frames per phoneme | 222,529 |
+| Flow decoder | 8 transformer blocks, width 256, conditional flow matching | 6,499,664 |
+| Other projections | | 64,848 |
+| **Acoustic model** | Based on [Matcha-TTS](https://arxiv.org/abs/2309.03199) | **8,607,969** |
+| **Vocoder** | Based on [Vocos](https://arxiv.org/abs/2306.00814): 6 ConvNeXt blocks, width 384, predicts STFT magnitude and phase | **5,954,946** |
+| **Total shipped** | | **14,562,915** |
+| Discriminators | Training only, never shipped: 5 period + 3 spectrogram discriminators ([HiFi-GAN](https://arxiv.org/abs/2010.05646)-style) | 2,846,344 |
+
+Design choices that keep training fast on a laptop:
+
+- **Alignment is learned during training.** Monotonic alignment search matches phonemes to frames, so no external forced aligner is needed.
+- **Batches are sized by audio length** (up to 6,000 mel frames each), so short clips share a batch instead of wasting padding.
+- **The vocoder predicts a spectrogram and inverts it** with a fixed transposed convolution (an exact inverse STFT). This avoids slow upsampling stacks and complex-number operations, so it runs on Apple's GPU (MPS) and can be exported to ONNX.
+
+## Audio format
+
+22,050 Hz mono, 80 mel bins (0–8 kHz), FFT 1024, hop 256, natural-log mel. A clip of `L` samples gives exactly `L / 256` frames. The acoustic model normalizes mels with training-set statistics stored inside the checkpoint.
+
+## Running
+
+```bash
+uv run python scripts/prepare_dailytalk.py                   # once; resumable
+uv run python scripts/train.py --stage vocoder  --minutes 60
+uv run python scripts/train.py --stage acoustic --minutes 60
+```
+
+- **Resumable:** each run continues from `runs/<stage>/last.pt`, saves every 10 minutes and on Ctrl-C. Train in as many sessions as you like.
+- **Listen as it learns:** the vocoder writes held-out reconstructions to `runs/vocoder/samples/` every 1,000 steps. Once a vocoder checkpoint exists, the acoustic stage writes text-to-speech samples to `runs/acoustic/samples/`.
+- **Metrics:** `runs/<stage>/metrics.jsonl` logs losses, seconds per step and GPU memory.
+- **CPU cap:** jobs use at most `cpu_share` (default 0.25) of total CPU, so the laptop stays usable. Override with `--cpu-share 0.5`.
+- **Options:** `--steps N` stops after N updates, `--device cpu` runs without MPS, `--run DIR` starts a separate experiment.
+
+Configured upper bounds are 150k acoustic and 300k vocoder steps. Stop earlier when the samples sound good.
+
+## Generating speech
+
+```bash
+uv run python scripts/speak.py "Hey everyone, welcome back." --out outputs/hello.wav
+uv run python scripts/speak.py --file script.txt --out outputs/video.wav --speed 1.05
+```
+
+Text is split into sentences and joined with short pauses, so any length works. `--steps` (flow steps, default 8) trades speed for quality; `--temperature` controls variation.
+
+## Measured so far
+
+| Check | Result |
+|---|---|
+| Unit tests | 13 passing |
+| Acoustic smoke run, synthetic data, M2 Air MPS | ~0.8 s/step, ~150 MB GPU memory |
+| Vocoder smoke run, synthetic data, batch 16 × 8,192 samples | ~1.2 s/step (before the GAN starts) |
+| Real-data speed, convergence, voice quality | Not measured yet |
+
+## Evaluation
+
+[`eval_prompts.tsv`](eval_prompts.tsv) lists fixed sentences for listening tests. Check intelligibility on unseen text, timing, pronunciation of numbers and names, and stability on long passages.

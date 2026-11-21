@@ -21,7 +21,7 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from scripts.bounded_cache import cache_bytes, write_bounded  # noqa: E402
+from oddmouth.cache import cache_bytes, write_bounded  # noqa: E402
 from oddmouth.audio import HOP, SR, decode_audio, mel_spectrogram, median_f0, trim_silence  # noqa: E402
 from oddmouth.text import SYMBOL_VERSION, clean, encode, phonemize  # noqa: E402
 from oddmouth.throttle import CpuLimiter, limit_threads  # noqa: E402
@@ -105,7 +105,7 @@ def prepare_file(fs, remote, shard_index, is_last, cfg, root, limits, unknown, l
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--root', type=Path, default=ROOT / 'data/dailytalk')
-    parser.add_argument('--config', type=Path, default=ROOT / 'configs/mac_training.json')
+    parser.add_argument('--config', type=Path, default=ROOT / 'configs/oddmouth.json')
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
     limit_threads(cfg['cpu_share'])

@@ -1,15 +1,12 @@
-# Oddmouth project instructions
+# Oddmouth: instructions for coding agents
 
-- The project name is **Oddmouth**.
-- The canonical repository is https://github.com/farzeenilyaszargar/oddmouth.
-- The user has requested that project work be stored in this repository after each update. Commit and push completed updates; report a push failure explicitly instead of implying that work is synced.
-- Keep research claims distinct from measured results. Do not claim voice quality, browser performance, or a trained model without evidence.
-- Keep secrets, bulk training audio, model weights, and training checkpoints out of ordinary Git. Track their provenance and reproducible acquisition instructions; choose suitable artifact storage when those assets are introduced.
-- The user conditionally authorizes voice-data downloads only when necessary, in chunks no larger than 1,000,000,000 bytes. Planning requires no audio download. Use the bounded cache plan in MAC_TRAINING_SYSTEM.md: stream source row groups into memory and keep prepared features within the 1 GB managed cache. Streaming a sample for listening is authorized.
-- The measured target computer is an M2 MacBook Air with 8 GiB unified memory. Treat MPS trainability, throughput, and browser performance as unmeasured until tested; avoid heavy jobs during severe memory pressure.
-- The user rejected Hi-Fi TTS / John Van Stan's audiobook delivery. Prioritize expressive, conversational YouTube presenter-style male speech. More than 50 hours remains preferred; distinguish whole-show duration from verified hours of one speaker.
-- Current scope: train every deployed neural component from random initialization on one selected speaker only, including the vocoder. No pretrained TTS/vocoder weights, fine-tuning, teacher distillation, or other-speaker training data. Pretrained transcription tools may be used only for offline data preparation.
-- The user also rejected Mark Nelson / plain audiobook reading. They selected Dewayne Noel / Dry Creek Wrangler after listening, but on 2026-11-21 asked for an easily accessible, clean, already-transcribed source instead. Dewayne is now historical research only. Recording the user's own voice or hiring a voice actor is ruled out.
-- Current model: about 15M deployed parameters (Matcha-style flow acoustic model plus a Vocos-style vocoder), trainable locally on the Mac. Current data: the DailyTalk male speaker (about 10.8 published hours; CC-BY-SA 4.0 "for academic use", with dialogue text derived from DailyDialog, which is CC-BY-NC-SA 4.0), streamed from a pinned Hugging Face mirror. The user has not yet listened to and approved this voice, and commercial use is not cleared. The 50-hour preference is unmet.
-- Explicit emotion controls have been removed by the user. Do not add emotion embeddings, emotion labels, or happy/angry acceptance gates. Preserve naturally engaging delivery from the selected speaker.
-- Keep Oddmouth jobs (data preparation, training, benchmarks) at or below roughly 20–30% of total CPU. `configs/mac_training.json` sets `cpu_share` 0.25, which `oddmouth/throttle.py` enforces.
+- Repository: https://github.com/farzeenilyaszargar/oddmouth. Commit and push after every completed update; report a push failure explicitly.
+- Keep claims honest: separate research from measured results. Never claim voice quality, speed or a trained model without evidence.
+- Never commit audio, prepared features, checkpoints, model weights or secrets (`data/`, `runs/`, `weights/`, `outputs/` are ignored).
+- Downloads: only when needed, at most 1,000,000,000 bytes per chunk. Stream sources and keep prepared data within the 1 GB managed cache (`oddmouth/cache.py`).
+- CPU: keep jobs at or below ~20–30% of total CPU (`cpu_share` in `configs/oddmouth.json`, enforced by `oddmouth/throttle.py`). Target machine: M2 MacBook Air, 8 GB; avoid heavy jobs under memory pressure.
+- Model scope: at most 15M deployed parameters. Every deployed network, including the vocoder, is trained from random weights on one speaker. No pretrained TTS/vocoder weights, fine-tuning, distillation or other-speaker data. Pretrained speech recognition is allowed only for offline data preparation.
+- No emotion controls, tags or labels; learn natural delivery from the recordings.
+- Voice: one natural, conversational male voice for narration and developer or social-media videos. The user rejected audiobook-style reading (Hi-Fi TTS / John Van Stan, Mark Nelson). Recording the user's own voice or hiring a voice actor is ruled out.
+- Data: the default is the DailyTalk male speaker (docs/data.md); its commercial use is not cleared. On 2026-11-21 the user suggested using Dewayne Noel / Dry Creek Wrangler podcast audio as the dataset instead. That source has no verified training or voice licence and needs transcription and cleaning; do not publish weights trained on it or infer public-domain status.
+- Keep the public README and docs short and practical for open-source readers; put no personal or historical research notes there.

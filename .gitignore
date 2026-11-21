@@ -1,0 +1,21 @@
+# Local credentials and environment
+.env
+.env.*
+!.env.example
+.DS_Store
+.venv/
+__pycache__/
+node_modules/
+
+# Generated assets and bulk ML artifacts
+data/
+datasets/
+checkpoints/
+weights/
+runs/
+outputs/
+*.safetensors
+*.ckpt
+*.pth
+*.pt
+*.onnx

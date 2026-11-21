@@ -1,0 +1,41 @@
+id	category	text
+01	narration	The old oak stood at the edge of the village, keeping its secrets through another winter.
+02	narration	Well now, that is a story worth telling. Pull up a chair, and let me begin.
+03	narration	He opened the letter slowly. For a moment, the room was completely still.
+04	narration	Beyond the hills, the first light of morning touched the river.
+05	conversation	Hello there. It is good to hear from you.
+06	conversation	Yes, that sounds right to me.
+07	conversation	Hmm. Give me a moment to think about that.
+08	conversation	Could you tell me which part you would like me to explain?
+09	conversation	You have had a difficult day. Let us take this one step at a time.
+10	conversation	Oh, I see what you mean now!
+11	question	You left the key on the table?
+12	question	Where did you leave the key?
+13	emphasis	I said we could leave tomorrow, if the weather clears.
+14	emphasis	It was a small decision, but it changed everything.
+15	money	The total is $12.50, including a $2 delivery fee.
+16	money	The subscription costs ₹1,499 per year.
+17	numbers	The reading rose from 0.05 to 3.75, an increase of seventy-four times.
+18	numbers	Please enter the code 407219, one digit at a time.
+19	date	Our meeting is on November 21, 2026, at 4:30 p.m.
+20	date	The archive covers the years 1901 through 1909.
+21	abbreviation	Dr. Rao spoke with Prof. Singh before visiting St. Mary's Hospital.
+22	acronym	The CPU handles the task while the GPU remains idle.
+23	acronym	NASA published a new FAQ about the mission.
+24	names	Arjun, Priya, and Suresh traveled from Bengaluru to Thiruvananthapuram.
+25	names	Siobhan met Joaquin near the old library in Edinburgh.
+26	heteronym	Please record the record before you present the present.
+27	heteronym	The wind made it difficult to wind the old clock.
+28	heteronym	She read the book yesterday and will read it again tomorrow.
+29	contractions	I would have helped if I had known you were coming.
+30	contractions	Don't worry. We'll find a way, won't we?
+31	punctuation	Wait... did you hear that? There it is again!
+32	punctuation	He whispered, "Stay close," and stepped into the hallway.
+33	list	We need three things: clean water, a warm blanket, and a little patience.
+34	technical	The model converts text into compressed audio representations, then decodes them into sound.
+35	units	Add 250 milliliters of water and heat the mixture to 80 degrees Celsius.
+36	short	Yes.
+37	short	Absolutely.
+38	short	Why?
+39	long	Although the road was narrow and the rain had begun to fall, the old traveler kept walking toward the lights of the village, certain that someone there would remember the promise made so many years before.
+40	join	The door closed behind him. Nobody moved. Then, from somewhere upstairs, a familiar voice called his name.

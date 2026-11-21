@@ -8,7 +8,7 @@ Updated 21 November 2026. The user listened to Dewayne Noel and selected him as 
 - Intended output: expressive narration and conversational YouTube voiceovers, including happy/angry controls.
 - Complete deployed model: at most 50M learned parameters, including the audio decoder.
 - Available metadata: 209 podcast episodes with 87:03:34 listed programme duration. Clean target-speaker hours remain unmeasured.
-- Existing user constraint: no local voice-data download. No audio acquisition or training has started.
+- Updated user constraint: download only if necessary, in chunks no larger than 1,000,000,000 bytes. Planning needs no voice audio; no audio acquisition or training has started. See [the Mac training system](MAC_TRAINING_SYSTEM.md) for architecture, bounded working storage, and training stages.
 - A search of official sources and public reports did not verify the user's report that Dewayne has died. Do not record that as an established fact.
 
 ## Ownership question

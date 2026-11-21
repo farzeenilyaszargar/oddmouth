@@ -1,0 +1,72 @@
+{
+  "status": "Planning configuration; no speech model implementation or training is claimed",
+  "parameter_limit": 50000000,
+  "preferred_start": "Adapt a trainable Matcha-style pretrained acoustic model; freeze a compatible pretrained vocoder",
+  "baseline_published_acoustic_parameters_approx": 18200000,
+  "baseline_published_vocoder_parameters_approx": 13900000,
+  "expanded_candidate": {
+    "status": "Analytic design estimate; not an existing checkpoint and not a direct pretrained weight match",
+    "phoneme_vocab_size": 512,
+    "text_width": 256,
+    "text_layers": 4,
+    "text_ffn_width": 1024,
+    "flow_width": 384,
+    "flow_layers": 12,
+    "flow_ffn_width": 1536,
+    "attention_heads": 6,
+    "emotion_count": 8,
+    "emotion_width": 128,
+    "time_width": 128,
+    "vocoder_parameter_reservation": 13900000
+  },
+  "audio": {
+    "sample_rate": 22050,
+    "mel_bins": 80,
+    "hop_length": 256,
+    "fft_size": 1024,
+    "mel_feature_bytes_per_value": 2,
+    "note": "22.05kHz initial pilot to match a verified pretrained frontend/vocoder configuration; exact mel conventions must match selected weights"
+  },
+  "storage": {
+    "max_download_chunk_bytes": 1000000000,
+    "managed_data_cache_bytes": 1000000000,
+    "active_features_bytes": 450000000,
+    "persistent_eval_bytes": 100000000,
+    "replay_bytes": 100000000,
+    "raw_episode_bytes": 100000000,
+    "temporary_bytes": 200000000,
+    "metadata_bytes": 50000000,
+    "minimum_free_disk_bytes": 5000000000,
+    "note": "Decimal GB; cache cap includes concurrent raw/features/temp/eval/replay. Code, dependencies, weights and checkpoints are separate and explicitly budgeted."
+  },
+  "training": {
+    "backend": "pytorch_mps_after_forward_backward_validation",
+    "initial_dtype": "float32",
+    "microbatch_size": 1,
+    "gradient_accumulation_steps": 16,
+    "initial_crop_seconds": 4,
+    "maximum_crop_seconds_after_benchmark": 6,
+    "loader_workers": 0,
+    "pin_memory": false,
+    "freeze_vocoder_initially": true,
+    "freeze_text_encoder_initially": true,
+    "gradient_clip_norm": 1.0,
+    "initial_learning_rate_proposal": 0.00001,
+    "optimizer": "AdamW",
+    "weight_decay_proposal": 0.01,
+    "flow_inference_steps_to_compare": [2, 4, 8],
+    "asr_and_training_run_concurrently": false,
+    "checkpoint_keep_last": 1,
+    "checkpoint_keep_best": 1,
+    "epoch_shuffle_shards": true,
+    "shuffle_examples_within_shard": true,
+    "replay_fraction_proposal": 0.2,
+    "requires_full_model_benchmark_before_long_run": true
+  },
+  "authorization": {
+    "conditional_small_downloads_authorized_by_user": true,
+    "training_audio_download_needed_for_this_planning_task": false,
+    "selected_voice_rights_verified": false,
+    "voice_audio_downloaded": false
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "generated_utc": "2026-11-21T09:43:16.776441+00:00",
+  "status": "Analytic plan and observed hardware only; no MPS training benchmark",
+  "hardware": {
+    "architecture": "arm64",
+    "machine_model": "Mac14,2",
+    "chip": "Apple M2",
+    "cpu_cores": 8,
+    "unified_memory_bytes": 8589934592,
+    "macos_version": "27.2.1",
+    "disk_free_bytes": 16327405568,
+    "memory_pressure_snapshot": "The system has 8589934592 (524288 pages with a page size of 16384).\nSystem-wide memory free percentage: 27%",
+    "swap_snapshot": "vm.swapusage: total = 8192.00M  used = 7473.69M  free = 718.31M  (encrypted)",
+    "identifier_policy": "No serial number, hardware UUID, or provisioning identifier collected"
+  },
+  "proposed_expanded_parameters_by_module": {
+    "phoneme_embedding": 131072,
+    "text_encoder": 3159552,
+    "text_projection": 98688,
+    "duration_head": 395009,
+    "pitch_energy_heads": 66050,
+    "emotion_embedding_and_projection": 50560,
+    "time_embedding_mlp": 197376,
+    "mel_input_output": 62672,
+    "conditional_flow_decoder": 28399104,
+    "vocoder_reservation_not_counted_weights": 13900000
+  },
+  "proposed_expanded_parameter_total": 46460083,
+  "actual_implemented_model_parameter_count": null,
+  "parameter_headroom": 3539917,
+  "weights_only_bytes": {
+    "fp32": 185840332,
+    "fp16": 92920166,
+    "int8_ideal": 46460083
+  },
+  "fp32_adam_memory_estimate": {
+    "parameters_gradients_two_moments_upper_bytes": 520961328,
+    "frozen_vocoder_weights_bytes": 55600000,
+    "excludes": "Activations, allocator, runtime, CPU/GPU copies and other applications"
+  },
+  "storage_arithmetic": {
+    "fifty_hours_pcm16_bytes": 7938000000,
+    "fifty_hours_fp16_mel_bytes_approx": 2480625000,
+    "active_feature_shard_audio_hours_approx": 9.070294784580499,
+    "note": "Payload estimates before headers, padding, other features or compression"
+  },
+  "download_chunk_cap_bytes": 1000000000,
+  "concurrent_managed_cache_allocations_bytes": {
+    "active_features_bytes": 450000000,
+    "persistent_eval_bytes": 100000000,
+    "replay_bytes": 100000000,
+    "raw_episode_bytes": 100000000,
+    "temporary_bytes": 200000000,
+    "metadata_bytes": 50000000
+  },
+  "concurrent_managed_cache_total_bytes": 1000000000,
+  "minimum_disk_reserve_satisfied_now": true,
+  "speech_audio_downloads_performed": false,
+  "training_started": false
+}

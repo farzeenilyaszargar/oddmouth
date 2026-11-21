@@ -6,7 +6,9 @@ The target is a complete deployed neural pipeline of approximately 50 million pa
 
 ## Current status
 
-The user has selected **Dewayne Noel / Dry Creek Wrangler** for expressive, conversational YouTube-style delivery, with planned `[happy]` and `[angry]` controls. Recording/model-distribution rights and clean training hours remain unverified; see [the training preparation plan](DEWAYNE_TRAINING_PLAN.md). The existing no-local-audio-download instruction remains in effect. No custom model has been trained yet, and ElevenLabs-level quality or emotion control has not been demonstrated.
+The user has selected **Dewayne Noel / Dry Creek Wrangler** for expressive, conversational YouTube-style delivery, with planned `[happy]` and `[angry]` controls. Recording/model-distribution rights and clean training hours remain unverified; see [the training preparation plan](DEWAYNE_TRAINING_PLAN.md). Necessary downloads are conditionally authorized in chunks of at most 1 GB; none were necessary for this planning update. No custom model has been trained yet, and ElevenLabs-level quality or emotion control has not been demonstrated.
+
+The [Mac training system plan](MAC_TRAINING_SYSTEM.md) targets the measured M2 MacBook Air with 8 GiB memory. It specifies a pretrained baseline, a hypothetical 46.5M complete architecture, bounded data rotation, staged experiments, and browser export gates. Reproduce the planning report with `python3 scripts/plan_training.py --output reports/mac_training_preflight.json`; run the storage/planning checks with `python3 -m unittest discover -s tests -v`. These utilities do not download audio or train a model.
 
 ## Web demo
 

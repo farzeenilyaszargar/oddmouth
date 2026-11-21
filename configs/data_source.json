@@ -46,5 +46,20 @@
     "surprised"
   ],
   "emotion_coverage_verified": false,
-  "expression_spec": "EXPRESSION_CONTROLS.md"
+  "expression_spec": "EXPRESSION_CONTROLS.md",
+  "leading_narration_candidate": {
+    "speaker": "Mark Nelson",
+    "publisher": "LibriVox",
+    "reader_id": "251",
+    "source_url": "https://librivox.org/reader/251",
+    "catalogue_report": "reports/mark_nelson_catalogue.json",
+    "catalogue_hours_before_filtering": 55.35194444444444,
+    "catalogue_book_count": 6,
+    "streaming_preview": "https://www.youtube.com/watch?v=xC56UO6GoKA&t=60s",
+    "verified_clean_training_hours": null,
+    "emotion_coverage_verified": false,
+    "listening_approved": false,
+    "synthetic_voice_permission_verified": false,
+    "status": "New audition candidate for deep narration; not an approved training source"
+  }
 }

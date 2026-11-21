@@ -1,0 +1,65 @@
+{
+  "checked_on": "2026-11-21",
+  "publisher": "LibriVox",
+  "speaker": "Mark Nelson",
+  "reader_id": "251",
+  "reader_url": "https://librivox.org/reader/251",
+  "books": [
+    {
+      "title": "A Voyage to Arcturus",
+      "source_url": "https://librivox.org/a-voyage-to-arcturus-by-david-lindsay/",
+      "reader": "Mark Nelson",
+      "runtime": "11:15:27",
+      "duration_seconds": 40527,
+      "duration_type": "Publisher catalogue before filtering; checked using web research"
+    },
+    {
+      "title": "First Lensman",
+      "source_url": "https://librivox.org/first-lensman-by-e-e-smith/",
+      "reader": "Mark Nelson",
+      "runtime": "11:11:56",
+      "duration_seconds": 40316,
+      "duration_type": "Publisher catalogue before filtering; checked using web research"
+    },
+    {
+      "title": "Spacehounds of IPC",
+      "source_url": "https://librivox.org/spacehounds-of-ipc-by-e-e-smith/",
+      "reader": "Mark Nelson",
+      "runtime": "9:42:22",
+      "duration_seconds": 34942,
+      "duration_type": "Publisher catalogue before filtering; checked using web research"
+    },
+    {
+      "title": "Space Viking",
+      "source_url": "https://librivox.org/space-viking-by-h-beam-piper/",
+      "reader": "Mark Nelson",
+      "runtime": "7:37:50",
+      "duration_seconds": 27470,
+      "duration_type": "Publisher catalogue before filtering; checked using web research"
+    },
+    {
+      "title": "Four-Day Planet",
+      "source_url": "https://librivox.org/four-day-planet-by-h-beam-piper/",
+      "reader": "Mark Nelson",
+      "runtime": "6:20:00",
+      "duration_seconds": 22800,
+      "duration_type": "Publisher catalogue before filtering; checked using web research"
+    },
+    {
+      "title": "Bat Wing",
+      "source_url": "https://librivox.org/bat-wing-by-sax-rohmer/",
+      "reader": "Mark Nelson",
+      "runtime": "9:13:32",
+      "duration_seconds": 33212,
+      "duration_type": "Publisher catalogue before filtering; checked using web research"
+    }
+  ],
+  "total_catalogue_seconds": 199267,
+  "total_catalogue_hours": 55.35194444444444,
+  "total_catalogue_hms": "55:21:07",
+  "audio_downloaded": false,
+  "clean_training_hours_verified": false,
+  "emotion_coverage_verified": false,
+  "quality_status": "Audition candidate; no signal quality audit or assistant listening assessment performed",
+  "rights_status": "Publisher states recordings public domain in USA; other jurisdictions and synthetic voice permission not established"
+}

@@ -8,6 +8,8 @@ Source research checked on 21 November 2026. **Source identification only: no au
 
 The target is a deep male creator voice: engaged explanation, storytelling, rhetorical questions, emphasis, reactions, and natural changes in pace. Audio cleanliness and quantity alone are insufficient. No replacement is approved yet, and no source meeting all requirements has been verified.
 
+For the latest request for clean, thick-voiced narration, the new audition candidate is **Mark Nelson / LibriVox**. Six publisher-listed solo books total **55:21:07 before filtering**; see `MARK_NELSON_SOURCE.md` for sample links, the book inventory, and remaining quality/rights/emotion checks. This does not reverse the rejection of John Van Stan or establish 50 usable training hours.
+
 ## Leading source to audition: Chris Fisher / LINUX Unplugged
 
 - [Host profile](https://www.jupiterbroadcasting.com/hosts/chris/)

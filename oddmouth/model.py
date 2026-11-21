@@ -11,6 +11,7 @@ turns them into audio. No complex ops, so it runs on MPS and exports to ONNX.
 There is no pretrained-weight loading path anywhere in this module.
 """
 import math
+import time
 
 import torch
 from torch import nn
@@ -157,7 +158,7 @@ class AcousticModel(nn.Module):
     def normalize(self, mel):  # [B, 80, T] log mel -> [B, T, 80] normalized
         return ((mel - self.mel_mean[:, None]) / self.mel_std[:, None]).transpose(1, 2)
 
-    def losses(self, tokens, token_lengths, mel, frame_lengths, sigma_min=1e-4):
+    def losses(self, tokens, token_lengths, mel, frame_lengths, sigma_min=1e-4, *, profile=None):
         x, token_mask = self.encode(tokens, token_lengths)
         y = self.normalize(mel)
         frame_mask = sequence_mask(frame_lengths, y.shape[1])
@@ -166,7 +167,15 @@ class AcousticModel(nn.Module):
             # Unit-variance Gaussian log-likelihood of each frame under each token.
             log_p = -0.5 * ((y.square().sum(-1)[:, None, :]) - 2 * mu_x @ y.transpose(1, 2)
                             + mu_x.square().sum(-1)[..., None])
+            if profile is not None:
+                if log_p.device.type == 'mps':
+                    torch.mps.synchronize()
+                started = time.monotonic()
             path = monotonic_alignment(log_p, token_lengths, frame_lengths)
+            if profile is not None:
+                if log_p.device.type == 'mps':
+                    torch.mps.synchronize()
+                profile['alignment'] = time.monotonic() - started
         durations = path.sum(-1)
         log_w = self.duration(x.detach(), token_mask)
         target_log_w = torch.log(durations + 1e-8) * token_mask

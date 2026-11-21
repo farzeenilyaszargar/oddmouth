@@ -41,8 +41,8 @@
     "device": "mps",
     "dtype": "float32",
     "acoustic": {
-      "batch_frames": 6000,
-      "max_batch": 32,
+      "batch_frames": 1024,
+      "max_batch": 4,
       "learning_rate": 0.0002,
       "warmup_steps": 1000,
       "total_steps": 150000,
@@ -50,7 +50,7 @@
       "gradient_clip_norm": 1.0
     },
     "vocoder": {
-      "batch_size": 16,
+      "batch_size": 4,
       "segment_frames": 32,
       "learning_rate": 0.0002,
       "betas": [

@@ -22,7 +22,7 @@ text ─▶ espeak-ng phonemes ─▶ [ acoustic model ] ─▶ mel spectrogram 
 Design choices that keep training fast on a laptop:
 
 - **Alignment is learned during training.** Monotonic alignment search matches phonemes to frames, so no external forced aligner is needed.
-- **Batches are sized by audio length** (up to 6,000 mel frames each), so short clips share a batch instead of wasting padding.
+- **Batches are sized by audio length.** On an 8 GB Mac the acoustic default targets 1,024 padded mel frames and at most four clips. The vocoder uses four segments of 8,192 samples.
 - **The vocoder predicts a spectrogram and inverts it** with a fixed transposed convolution (an exact inverse STFT). This avoids slow upsampling stacks and complex-number operations, so it runs on Apple's GPU (MPS) and can be exported to ONNX.
 
 ## Audio format
@@ -40,8 +40,8 @@ uv run python scripts/train.py --stage acoustic --minutes 60
 - **Resumable:** each run continues from `runs/<stage>/last.pt`, saves every 10 minutes and on Ctrl-C. Train in as many sessions as you like.
 - **Listen as it learns:** the vocoder writes held-out reconstructions to `runs/vocoder/samples/` every 1,000 steps. Once a vocoder checkpoint exists, the acoustic stage writes text-to-speech samples to `runs/acoustic/samples/`.
 - **Metrics:** `runs/<stage>/metrics.jsonl` logs losses, seconds per step and GPU memory.
-- **CPU cap:** jobs use at most `cpu_share` (default 0.25) of total CPU, so the laptop stays usable. Override with `--cpu-share 0.5`.
-- **Options:** `--steps N` stops after N updates, `--device cpu` runs without MPS, `--run DIR` starts a separate experiment.
+- **CPU cap:** training limits compute threads and throttles toward an average `cpu_share` of total CPU. The default is 0.25 and overrides can go up to 0.30.
+- **Options:** `--steps N` stops after N updates, `--device cpu` runs without MPS, `--run DIR` selects a run directory, and `--profile --log-every 1` prints stage timings.
 
 Configured upper bounds are 150k acoustic and 300k vocoder steps. Stop earlier when the samples sound good.
 
@@ -61,7 +61,10 @@ Text is split into sentences and joined with short pauses, so any length works. 
 | Unit tests | 13 passing |
 | Acoustic smoke run, synthetic data, M2 Air MPS | ~0.8 s/step, ~150 MB GPU memory |
 | Vocoder smoke run, synthetic data, batch 16 × 8,192 samples | ~1.2 s/step (before the GAN starts) |
-| Real-data speed, convergence, voice quality | Not measured yet |
+| DailyTalk acoustic, M2 Air MPS | 6 updates, 1.37 s/update median, up to 215 MB allocated MPS memory at logging |
+| DailyTalk vocoder, M2 Air MPS | 6 reconstruction updates, 0.41 s/update median, up to 130 MB allocated MPS memory at logging |
+
+Both real-data runs used the default 25% CPU share and saved local checkpoints. The timing includes the first update. Alignment took 7–52 ms per acoustic update, and the CPU limiter took 1–33 ms. The short runs only establish that updates complete. Sustained throughput, adversarial training, convergence and voice quality still need measurement.
 
 ## Evaluation
 

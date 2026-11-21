@@ -15,7 +15,8 @@ def load_acoustic(root):
     manifest = load_manifest(root)
     splits = {'train': [], 'eval': []}
     for index in range(manifest['shards']):
-        shard = torch.load(Path(root) / f'acoustic-{index}.pt', weights_only=True)
+        shard = torch.load(Path(root) / f'acoustic-{index}.pt', weights_only=True,
+                           mmap=True, map_location='cpu')
         for i, split in enumerate(shard['split']):
             splits[split].append({'id': shard['ids'][i], 'text': shard['texts'][i],
                                   'tokens': shard['tokens'][i], 'mel': shard['mels'][i]})
@@ -25,7 +26,8 @@ def load_acoustic(root):
 def load_waves(root, shards):
     waves = {}
     for index in range(shards):
-        shard = torch.load(Path(root) / f'waves-{index}.pt', weights_only=True)
+        shard = torch.load(Path(root) / f'waves-{index}.pt', weights_only=True,
+                           mmap=True, map_location='cpu')
         waves.update(zip(shard['ids'], shard['waves']))
     return waves
 

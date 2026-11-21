@@ -13,7 +13,7 @@
 
 ## Status (2026-11-21)
 
-Work is **paused at the user's request**. Do not start data downloads, training or benchmarks until the user says to continue.
+The user resumed work under these instructions. DailyTalk remains the default while source selection and listening approval are open.
 
 Done and pushed:
 - 14.56M model in `oddmouth/model.py`: 8.61M Matcha-style acoustic model and 5.95M Vocos-style vocoder. Discriminators (2.85M) are used in training only.
@@ -34,18 +34,7 @@ Waiting on the user:
 
 ## Next steps, in order
 
-1. **Find why real-data training is slow.** A 60-step acoustic benchmark on real data logged no step within 10 minutes, while synthetic data ran at ~0.8 s/step.
-   - Profile with `scripts/train.py --stage acoustic --steps 10 --log-every 1 --run <scratch dir>`, timing each part separately: shard loading (`torch.load` of ~470 MB), collate, monotonic alignment (a Python loop over up to ~1,000 frames per batch, on CPU), forward/backward, and `CpuLimiter` sleeps.
-   - Likely causes:
-     - MPS recompiles kernels for every new tensor shape; real batches vary in length.
-     - The CPU alignment loop gets throttled by the 25% cap.
-   - Likely fixes:
-     - Pad batches to bucketed lengths (e.g. frames to a multiple of 64, tokens to a multiple of 16) to limit shape variety.
-     - Lower `batch_frames`.
-     - Vectorize or JIT the alignment loop.
-     - Exclude alignment from the limiter only if the user agrees.
-   - Then benchmark the vocoder stage the same way.
-   - Record real seconds/step and memory in `docs/training.md` under "Measured so far".
+1. **Extend the real-data benchmark.** Both stages completed six MPS updates and saved local checkpoints at the 25% CPU share. The smaller defaults and memory-mapped shards fit the short run. Profile data are summarized in `docs/training.md`; sustained and adversarial timings are open.
 2. **Small fixes:**
    - Add U+0303 to `oddmouth/text.py` symbols (bump `SYMBOL_VERSION`; re-run prep).
    - Optionally make the vocoder stage skip loading unused acoustic data.

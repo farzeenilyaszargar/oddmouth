@@ -99,7 +99,8 @@ def main():
     parser.add_argument('--log-every', type=int, default=25)
     parser.add_argument('--eval-every', type=int, default=1000)
     parser.add_argument('--seed', type=int, default=17)
-    parser.add_argument('--cpu-share', type=float, default=None, help='Max share of total CPU (default from config: 0.25)')
+    parser.add_argument('--cpu-share', type=float, default=None, help='Target CPU share, up to 0.30 (default: 0.25)')
+    parser.add_argument('--profile', action='store_true', help='Break down setup and synchronized step timings')
     args = parser.parse_args()
 
     cfg = json.loads(args.config.read_text())
@@ -114,13 +115,18 @@ def main():
         raise FileExistsError(f'{ckpt_path} exists; choose another --run to start fresh')
     reserve = cfg['storage']['minimum_free_disk_bytes']
     share = args.cpu_share if args.cpu_share is not None else cfg['cpu_share']
+    if not 0 < share <= 0.30:
+        parser.error('CPU share must be greater than zero and at most 0.30')
     limit_threads(share)
     limiter = CpuLimiter(share)
     torch.manual_seed(args.seed)
     random.seed(args.seed)
     np.random.seed(args.seed)
 
+    setup_started = time.monotonic()
     splits, manifest = load_acoustic(args.data)
+    if args.profile:
+        print(json.dumps({'profile': 'load_acoustic', 'seconds': time.monotonic() - setup_started}), flush=True)
     train, evaluation = splits['train'], splits['eval']
     if args.stage == 'acoustic':
         model = AcousticModel(arch, VOCAB_SIZE)
@@ -135,9 +141,14 @@ def main():
         betas = tuple(stage_cfg['betas'])
         optimizer = torch.optim.AdamW(model.parameters(), lr=stage_cfg['learning_rate'], betas=betas)
         d_optimizer = torch.optim.AdamW(disc.parameters(), lr=stage_cfg['learning_rate'], betas=betas)
+        wave_load_started = time.monotonic()
         waves = load_waves(args.data, manifest['shards'])
-        train = [x for x in train if x['id'] in waves]
+        if args.profile:
+            print(json.dumps({'profile': 'load_waves', 'seconds': time.monotonic() - wave_load_started}), flush=True)
+        train = [x for x in train if x['id'] in waves and x['mel'].shape[-1] >= stage_cfg['segment_frames']]
         evaluation = [x for x in evaluation if x['id'] in waves]
+        if len(train) < stage_cfg['batch_size']:
+            raise ValueError('Not enough waveform clips for the configured vocoder batch size')
         warmup = 0
     total_steps = stage_cfg['total_steps']
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, schedule(warmup, total_steps))
@@ -188,8 +199,10 @@ def main():
             torch.manual_seed(2026)
             if args.stage == 'acoustic':
                 losses = []
-                for i in range(0, len(evaluation), 16):
-                    batch = collate(evaluation[i:i + 16], device)
+                eval_batches = frame_batches(evaluation, stage_cfg['batch_frames'],
+                                             stage_cfg['max_batch'], 2026)
+                for indices in eval_batches:
+                    batch = collate([evaluation[i] for i in indices], device)
                     losses.append(float(model.losses(*batch)[0]))
                 result = {'eval_loss': float(np.mean(losses))}
                 vocoder_ckpt = ROOT / 'runs/vocoder/last.pt'
@@ -227,18 +240,34 @@ def main():
         while step < stop_step:
             if args.minutes and time.monotonic() - began > args.minutes * 60:
                 break
+            timings = {}
+            phase_started = time.monotonic()
+
+            def mark(phase):
+                nonlocal phase_started
+                if args.profile:
+                    sync(device)
+                    now = time.monotonic()
+                    timings[phase] = now - phase_started
+                    phase_started = now
+
             if args.stage == 'acoustic':
                 if cursor >= len(batches):
                     epoch, cursor = epoch + 1, 0
                     batches = frame_batches(train, stage_cfg['batch_frames'], stage_cfg['max_batch'], args.seed + epoch)
                 items = [train[i] for i in batches[cursor]]
                 cursor += 1
-                loss, parts = model.losses(*collate(items, device))
+                batch = collate(items, device)
+                mark('collate')
+                loss, parts = model.losses(*batch, profile=timings if args.profile else None)
+                mark('forward_including_alignment')
                 optimizer.zero_grad(set_to_none=True)
                 loss.backward()
+                mark('backward')
                 grad = torch.nn.utils.clip_grad_norm_(model.parameters(), stage_cfg['gradient_clip_norm'])
                 optimizer.step()
                 scheduler.step()
+                mark('optimizer')
             else:
                 segment = stage_cfg['segment_frames']
                 mels, reals = [], []
@@ -249,6 +278,7 @@ def main():
                     reals.append(wave)
                 mel = torch.stack(mels).to(device)
                 real = torch.stack(reals)[:, None].to(device)
+                mark('collate')
                 fake = model(mel)
                 adversarial_on = step >= stage_cfg['adversarial_start_step']
                 parts = {}
@@ -271,15 +301,21 @@ def main():
                         p.requires_grad_(True)
                     loss = loss + adversarial + stage_cfg['feature_matching_weight'] * matching
                     parts.update(adversarial=adversarial, feature_matching=matching)
+                mark('forward_and_discriminator')
                 optimizer.zero_grad(set_to_none=True)
                 loss.backward()
+                mark('backward')
                 grad = torch.nn.utils.clip_grad_norm_(model.parameters(), stage_cfg['gradient_clip_norm'])
                 optimizer.step()
                 scheduler.step()
+                mark('optimizer')
             if not torch.isfinite(loss):
                 raise FloatingPointError(f'Non-finite loss at step {step}')
             step += 1
             limiter()
+            mark('cpu_limiter')
+            if args.profile:
+                print(json.dumps({'profile': 'step', 'step': step, 'seconds': timings}), flush=True)
             for key, value in {'loss': loss, **parts}.items():
                 totals[key] = totals.get(key, 0.0) + float(value.detach())
             if step % args.log_every == 0:

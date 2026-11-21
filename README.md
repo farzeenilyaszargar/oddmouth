@@ -1,16 +1,25 @@
 # Oddmouth
 
-Oddmouth is a planned single-voice text-to-speech system for warm, deep male narration and conversational speech, designed to run locally in a web browser.
+Oddmouth is a small single-voice text-to-speech system for natural, conversational male narration in videos, trained locally and designed to run offline (and eventually in the browser).
 
-The target is a complete deployed neural pipeline of approximately 50 million parameters or fewer, with offline generation after the initial download and no provider character quota.
+The complete deployed model stays under 15 million parameters, with no provider character quota.
 
 ## Current status
 
-The current plan is to train **one voice entirely from scratch**, including the acoustic model and vocoder, using only the selected speaker's recordings. There are **no explicit emotion controls** and no pretrained TTS/vocoder initialization or teacher distillation. The user selected Dewayne Noel / Dry Creek Wrangler for naturally engaging narration. Recording rights and clean usable hours remain unverified.
+Oddmouth is a **14.56M-parameter** single-voice model: a Matcha-style flow-matching acoustic model (8.6M) and a Vocos-style vocoder (6.0M). Both are trained from random weights on one speaker on an M2 MacBook Air, using at most about 25% of the CPU. The training data is the **DailyTalk male speaker**: about 10.8 hours of transcribed conversational studio speech, streamed from Hugging Face. The code is implemented and tested; **no trained voice exists yet**, and real-data speed and quality are unmeasured. The DailyTalk licence does not clearly allow commercial use. See [MAC_TRAINING_SYSTEM.md](MAC_TRAINING_SYSTEM.md) and [DATA_SOURCE.md](DATA_SOURCE.md).
 
-The [Mac training system plan](MAC_TRAINING_SYSTEM.md) targets the M2 MacBook Air with 8 GiB memory. It specifies a hypothetical 46.41M complete architecture, separate acoustic and waveform training phases, a 1 GB combined data cache, resumable runs, and browser export gates. No custom model has been trained and no voice audio was downloaded for planning.
+## Quick start
 
-Reproduce the planning report with `python3 scripts/plan_training.py --output reports/mac_training_preflight.json`; run scope/storage checks with `python3 -m unittest discover -s tests -v`. These utilities do not download audio or train speech. Necessary future downloads remain capped at 1,000,000,000 bytes per chunk.
+```bash
+uv sync                                                    # needs espeak-ng: brew install espeak-ng
+uv run python scripts/prepare_dailytalk.py                 # stream + prepare data (~0.9 GB, resumable)
+uv run python scripts/train.py --stage vocoder --minutes 60
+uv run python scripts/train.py --stage acoustic --minutes 60
+uv run python scripts/speak.py "Hey everyone, welcome back." --out outputs/hello.wav
+uv run python -m unittest discover -s tests
+```
+
+Training resumes automatically, saves every 10 minutes and on Ctrl-C, and writes listening samples to `runs/<stage>/samples/`.
 
 ## Web demo
 

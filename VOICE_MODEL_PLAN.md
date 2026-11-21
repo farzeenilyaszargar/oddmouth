@@ -1,5 +1,7 @@
 # Oddmouth model plan
 
+> **Superseded 21 November 2026** by the 15M design in [MAC_TRAINING_SYSTEM.md](MAC_TRAINING_SYSTEM.md) and the DailyTalk data choice in [DATA_SOURCE.md](DATA_SOURCE.md). Kept for history.
+
 Revised 21 November 2026 to follow the user's current requirements. This replaces the earlier pretrained-model adaptation recommendation.
 
 ## Product and training contract

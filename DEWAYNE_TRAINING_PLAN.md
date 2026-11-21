@@ -1,5 +1,7 @@
 # Oddmouth: selected voice and training preparation
 
+> **Superseded 21 November 2026:** the user switched to a ready-made, transcribed source (DailyTalk). Kept as historical research.
+
 Updated 21 November 2026. The user listened to Dewayne Noel and selected him as the desired voice. **Listening approval is recorded; a licence for the intended recordings, synthetic voice, and model distribution has not been established.**
 
 ## Current state

@@ -1,5 +1,7 @@
 # Oddmouth research scope
 
+> **Superseded 21 November 2026** by [MAC_TRAINING_SYSTEM.md](MAC_TRAINING_SYSTEM.md). Kept for history.
+
 Updated 21 November 2026. The current decision is **single-speaker training from scratch, including the vocoder, with no emotion controls**. The earlier pretrained adaptation/teacher recommendation has been superseded.
 
 The [model plan](VOICE_MODEL_PLAN.md) identifies relevant primary papers and the [Mac system plan](MAC_TRAINING_SYSTEM.md) specifies implementation phases and resource limits. Algorithms and appropriately licensed source code can be reused; pretrained speaking weights, other-speaker training data and synthetic teacher speech are excluded.

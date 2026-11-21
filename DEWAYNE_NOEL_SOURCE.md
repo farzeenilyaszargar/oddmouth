@@ -1,5 +1,7 @@
 # Dewayne Noel / Dry Creek Wrangler: story-and-lessons candidate
 
+> **Superseded 21 November 2026:** see [DATA_SOURCE.md](DATA_SOURCE.md). Kept as historical research.
+
 Checked 21 November 2026. **Audition/source research only; no audio downloaded and no training permission established.**
 
 **Selection update:** the user has listened and approved Dewayne as the desired voice. See `DEWAYNE_TRAINING_PLAN.md` for preparation and unresolved ownership questions. No public-domain status is inferred from an unverified report of death.

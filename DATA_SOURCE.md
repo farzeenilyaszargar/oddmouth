@@ -1,8 +1,27 @@
 # Oddmouth voice-data search: expressive creator delivery
 
-Source research checked on 21 November 2026. **Source identification only: no audio dataset has been downloaded.**
+Source research checked on 21 November 2026. The DailyTalk male speaker is streamed and prepared by `scripts/prepare_dailytalk.py`; no raw audio is stored.
 
-## Current decision
+## Current decision (21 November 2026)
+
+The user asked for a clean, already-transcribed source that is easy to fetch again on every machine. Recording their own voice or hiring a voice actor is ruled out. **Selected: the DailyTalk male speaker.** It is the only commercially-licensed-in-principle, single-male, conversational, transcribed TTS dataset found that streams from Hugging Face in chunks under 1 GB.
+
+| Source | Male conversational hours | Transcribed / clean | Licence | Verdict |
+|---|---|---|---|---|
+| [DailyTalk](https://github.com/keonlee9420/DailyTalk), [paper](https://arxiv.org/abs/2207.01063), [HF male mirror](https://huggingface.co/datasets/innovationm-ai/dailytalk-male) | ~10.8 h (11,867 clips, 38,902 s, per paper table) | Yes; studio TTS recording | CC-BY-SA 4.0, described "for academic use"; text from DailyDialog (CC-BY-NC-SA 4.0) | **Selected** for training; commercial use not cleared |
+| [Expresso](https://speechbot.github.io/expresso) ([HF](https://huggingface.co/datasets/ylacombe/expresso)) | ~40 h across 2 male + 2 female, so roughly 10 h per speaker; includes improvised dialogue | Yes | CC-BY-NC 4.0 | More expressive, but non-commercial |
+| [RyanSpeech](https://arxiv.org/abs/2106.08468) | >10 h, professional male voice actor, conversational text | Yes | CC-BY-NC-ND (non-commercial, no derivatives) | Licence too restrictive |
+| Hi-Fi TTS, LibriTTS-R, Mark Nelson (LibriVox) | Large | Yes | Permissive | Audiobook reading, rejected by the user |
+| Dewayne Noel; Chris Fisher / LINUX Unplugged (CC-BY-SA) | 87 h feed runtime; unknown | No; raw podcasts with other voices, music and ads | Unclear / show licence only | Needs diarization and transcription; not "ready-made" |
+
+Caveats to keep visible:
+
+- The Hugging Face mirror labels itself "apache-2.0". That is not authoritative; the original DailyTalk licence governs.
+- Gender, voice quality and suitability must be confirmed by listening. Data preparation reports a rough median F0 as a check.
+- Even a permissive copyright licence does not by itself grant rights to imitate an identifiable person's voice. DailyTalk speakers were recorded for a TTS dataset, which is the strongest consent signal among these options.
+- For monetized videos, an Expresso/RyanSpeech-style non-commercial licence would not be enough. DailyTalk's commercial position also needs clarification from its authors.
+
+## Earlier decisions (superseded)
 
 **The user rejected the audiobook delivery after listening. John Van Stan / Hi-Fi TTS is no longer the recommended target voice.** It meets the published hours requirement but misses the desired expressive, conversational YouTube presentation style.
 

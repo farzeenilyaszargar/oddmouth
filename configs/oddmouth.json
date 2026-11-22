@@ -65,7 +65,16 @@
     },
     "synthesis_flow_steps": 8,
     "stages_run_in_separate_processes": true,
-    "checkpoint_every_minutes": 10
+    "checkpoint_every_minutes": 10,
+    "cuda": {
+      "acoustic": {
+        "batch_frames": 8192,
+        "max_batch": 32
+      },
+      "vocoder": {
+        "batch_size": 16
+      }
+    }
   },
   "storage": {
     "max_download_chunk_bytes": 1000000000,

@@ -106,10 +106,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--root', type=Path, default=ROOT / 'data/dailytalk')
     parser.add_argument('--config', type=Path, default=ROOT / 'configs/oddmouth.json')
+    parser.add_argument('--cpu-share', type=float, default=None,
+                        help='Default from config (0.25). Values above 0.30 are allowed only off macOS, e.g. on a cloud machine')
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
-    limit_threads(cfg['cpu_share'])
-    limiter = CpuLimiter(cfg['cpu_share'])
+    share = args.cpu_share if args.cpu_share is not None else cfg['cpu_share']
+    if not 0 < share <= (0.30 if sys.platform == 'darwin' else 1.0):
+        parser.error('CPU share must be greater than zero and at most 0.30 on macOS')
+    limit_threads(share)
+    limiter = CpuLimiter(share)
     source, storage = cfg['data_source'], cfg['storage']
     limits = {'file': storage['max_download_chunk_bytes'], 'cache': storage['managed_data_cache_bytes'],
               'reserve': storage['minimum_free_disk_bytes']}

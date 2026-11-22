@@ -47,6 +47,10 @@ Configured upper bounds are 150k acoustic and 300k vocoder steps. Stop earlier w
 
 To run both stages in consecutive parts, use `uv run --extra browser python scripts/train_in_parts.py`. The runner finishes the vocoder reconstruction warmup first, then advances both stages toward their configured limits. It saves after each part and exports periodic browser previews. Use one runner at a time. Ctrl-C requests a save at the next update boundary. Progress is recorded in `runs/continuous-status.json`. `--vocoder-ratio 0.5` schedules one vocoder step per two acoustic steps, which focuses time on the acoustic model once the vocoder reconstructs well. `--only acoustic` trains one stage, so the other can run in its own process (for example the vocoder on MPS with `--cpu-share 0.10`).
 
+## Training on a cloud GPU
+
+`scripts/train_cloud.py` trains both stages in parallel on CUDA, with larger batches (`training.cuda` in the config). [`kaggle/`](../kaggle/README.md) has a ready-to-run notebook for Kaggle's free GPUs. CUDA support has not been benchmarked yet.
+
 ## Generating speech
 
 ```bash

@@ -1,4 +1,4 @@
-"""Train one Oddmouth stage on the Mac. Resumable; safe to stop with Ctrl-C.
+"""Train one Oddmouth stage on a Mac or a CUDA GPU. Resumable; safe to stop with Ctrl-C.
 
     uv run python scripts/train.py --stage acoustic --minutes 60
     uv run python scripts/train.py --stage vocoder --minutes 60
@@ -70,10 +70,16 @@ def schedule(warmup, total, floor=0.1):
 def sync(device):
     if device.type == 'mps':
         torch.mps.synchronize()
+    elif device.type == 'cuda':
+        torch.cuda.synchronize(device)
 
 
 def memory(device):
-    return torch.mps.current_allocated_memory() if device.type == 'mps' else None
+    if device.type == 'mps':
+        return torch.mps.current_allocated_memory()
+    if device.type == 'cuda':
+        return torch.cuda.memory_allocated(device)
+    return None
 
 
 def discriminator_loss(real, fake):
@@ -95,12 +101,12 @@ def main():
     parser.add_argument('--run', type=Path, default=None, help='Default: runs/<stage>')
     parser.add_argument('--data', type=Path, default=ROOT / 'data/dailytalk')
     parser.add_argument('--config', type=Path, default=ROOT / 'configs/oddmouth.json')
-    parser.add_argument('--device', choices=['mps', 'cpu'], default=None)
+    parser.add_argument('--device', choices=['mps', 'cpu', 'cuda'], default=None)
     parser.add_argument('--fresh', action='store_true', help='Ignore an existing checkpoint (refuses to overwrite)')
     parser.add_argument('--log-every', type=int, default=25)
     parser.add_argument('--eval-every', type=int, default=1000)
     parser.add_argument('--seed', type=int, default=17)
-    parser.add_argument('--cpu-share', type=float, default=None, help='Target CPU share, up to 0.30 (default: 0.25)')
+    parser.add_argument('--cpu-share', type=float, default=None, help='Target CPU share, up to 0.30 on a Mac or CPU; up to 1.0 with --device cuda (default: 0.25)')
     parser.add_argument('--profile', action='store_true', help='Break down setup and synchronized step timings')
     args = parser.parse_args()
 
@@ -118,6 +124,13 @@ def main():
     device = torch.device(args.device or cfg['training']['device'])
     if device.type == 'mps' and not torch.backends.mps.is_available():
         raise RuntimeError('MPS unavailable; pass --device cpu')
+    if device.type == 'cuda':
+        if not torch.cuda.is_available():
+            raise RuntimeError('CUDA unavailable')
+        # Cloud GPUs train with larger batches; see training.cuda in the config.
+        stage_cfg = {**stage_cfg, **cfg['training'].get('cuda', {}).get(args.stage, {})}
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
     run = args.run or ROOT / 'runs' / args.stage
     run.mkdir(parents=True, exist_ok=True)
     ckpt_path = run / 'last.pt'
@@ -125,8 +138,9 @@ def main():
         raise FileExistsError(f'{ckpt_path} exists; choose another --run to start fresh')
     reserve = cfg['storage']['minimum_free_disk_bytes']
     share = args.cpu_share if args.cpu_share is not None else cfg['cpu_share']
-    if not 0 < share <= 0.30:
-        parser.error('CPU share must be greater than zero and at most 0.30')
+    # The 0.30 cap protects the user's Mac; rented cloud GPU machines may use all cores.
+    if not 0 < share <= (1.0 if device.type == 'cuda' else 0.30):
+        parser.error('CPU share must be greater than zero and at most 0.30 (1.0 with --device cuda)')
     limit_threads(share)
     limiter = CpuLimiter(share)
     torch.manual_seed(args.seed)
@@ -215,7 +229,7 @@ def main():
                     batch = collate([evaluation[i] for i in indices], device)
                     losses.append(float(model.losses(*batch)[0]))
                 result = {'eval_loss': float(np.mean(losses))}
-                vocoder_ckpt = ROOT / 'runs/vocoder/last.pt'
+                vocoder_ckpt = run.parent / 'vocoder/last.pt'  # sibling run, e.g. runs/vocoder
                 if vocoder_ckpt.exists():
                     sample = evaluation[0]
                     mel, _ = model.synthesize(sample['tokens'][None].long().to(device),

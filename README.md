@@ -26,7 +26,7 @@ uv run python scripts/train.py --stage acoustic --minutes 60
 uv run python scripts/speak.py "Hey everyone, welcome back." --out outputs/hello.wav
 ```
 
-Training resumes automatically, saves on Ctrl-C, and writes listening samples to `runs/<stage>/samples/`.
+Training resumes automatically, saves on Ctrl-C, and writes listening samples to `runs/<stage>/samples/`. To train faster on a free cloud GPU, see [kaggle/](kaggle/README.md).
 
 ## How it works
 
@@ -47,10 +47,11 @@ The default voice is the male speaker from **DailyTalk**: about 10.8 hours of cl
 
 ```
 oddmouth/      model, audio features, text frontend, data loading, CPU limiter
-scripts/       prepare_dailytalk.py · train.py · speak.py
+scripts/       prepare_dailytalk.py · train.py · train_cloud.py · speak.py
 configs/       oddmouth.json: architecture, training, data source, limits
 tests/         unit tests: python -m unittest discover -s tests
 docs/          training guide, data notes, evaluation prompts
+kaggle/        notebook for training on Kaggle's free GPUs
 web/           Next.js demo page (prerecorded sample; not yet wired to the model)
 ```
 

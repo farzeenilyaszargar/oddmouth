@@ -35,13 +35,13 @@ print(json.dumps(steps))
     return json.loads(subprocess.check_output([PYTHON, '-c', code], cwd=ROOT, text=True))
 
 
-def choose_part(steps, targets, warmup, size, vocoder_ratio=None):
+def choose_part(steps, targets, warmup, size, vocoder_ratio=None, only=None):
     """Pick the stage that is furthest behind. vocoder_ratio is the number of
     vocoder steps scheduled per acoustic step (default: the ratio of the caps)."""
-    available = [stage for stage in STAGES if steps[stage] < targets[stage]]
+    available = [stage for stage in STAGES if steps[stage] < targets[stage] and only in (None, stage)]
     if not available:
         return None
-    if steps['vocoder'] < min(warmup, targets['vocoder']):
+    if only is None and steps['vocoder'] < min(warmup, targets['vocoder']):
         return 'vocoder', min(size, warmup - steps['vocoder'], targets['vocoder'] - steps['vocoder'])
     weights = targets if vocoder_ratio is None else {'acoustic': 1.0, 'vocoder': vocoder_ratio}
     stage = min(available, key=lambda name: steps[name] / weights[name])
@@ -144,8 +144,10 @@ def run(args):
                     break
                 time.sleep(1)
             continue
-        part = choose_part(steps, targets, warmup, args.chunk_steps, args.vocoder_ratio)
+        part = choose_part(steps, targets, warmup, args.chunk_steps, args.vocoder_ratio, args.only)
         if sum(steps.values()) - last_preview >= args.preview_interval or part is None:
+            if args.only:
+                steps = load_steps()  # the other stage may be training in its own process
             status('exporting_preview', steps=steps, targets=targets)
             try:
                 runner.preview(steps)
@@ -186,6 +188,8 @@ def main():
     parser.add_argument('--preview-interval', type=int, default=5000)
     parser.add_argument('--vocoder-ratio', type=float, default=None,
                         help='Vocoder steps per acoustic step (default: ratio of the step caps, 2.0)')
+    parser.add_argument('--only', choices=STAGES, default=None,
+                        help='Train one stage only, e.g. while the other trains in a separate process')
     args = parser.parse_args()
     if args.vocoder_ratio is not None and args.vocoder_ratio <= 0:
         parser.error('--vocoder-ratio must be positive')

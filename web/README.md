@@ -1,6 +1,6 @@
 # Oddmouth web
 
-A single-page Next.js demo for Oddmouth. It is **not yet connected to the model**: the Generate button plays a bundled, prerecorded sample.
+A single-page Next.js demo for Oddmouth. On the local development site, **Generate speaks with the newest exported training checkpoint**, in the browser, and the mouth follows the model's predicted timing for each sound. The public build has no model yet, so Generate plays a bundled, prerecorded sample.
 
 ```sh
 cd web
@@ -31,7 +31,8 @@ ignored `outputs/` and are excluded from the production build.
 ## What's here
 
 - A text editor (1,000-character UI limit), with player controls and WAV download for the demo sample.
-- An animated face whose mouth follows the audio, using cues in `demo/lip-sync.json` generated with [Rhubarb Lip Sync](https://github.com/DanielSWolf/rhubarb-lip-sync). Regenerate them with `npm run lip-sync -- /path/to/rhubarb`.
+- An animated face whose mouth follows the audio. For generated speech, each phoneme's predicted duration maps to a mouth shape (`app/lib/visemes.ts`). For the bundled sample, cues in `demo/lip-sync.json` come from [Rhubarb Lip Sync](https://github.com/DanielSWolf/rhubarb-lip-sync); regenerate them with `npm run lip-sync -- /path/to/rhubarb`.
+- Long text is split into short phrases (`app/lib/phrases.ts`), because the model was trained on clips of about 8 words.
 - Locally bundled fonts (Baloo 2, Nunito), with no external requests or analytics.
 - Search and share metadata. Set `SITE_URL` before a production build; without it, pages are `noindex`.
 

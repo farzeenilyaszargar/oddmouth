@@ -1,5 +1,8 @@
 import { env, InferenceSession, Tensor } from 'onnxruntime-web/wasm';
 import { phonemize } from 'phonemizer';
+import type { MouthCue } from '../lib/lip-sync';
+import { cuesFromDurations } from '../lib/visemes';
+import { phrases } from '../lib/phrases';
 
 type Model = {
   sampleRate: number;
@@ -51,10 +54,14 @@ async function tokenize(text: string, config: Model) {
     return piece.replace(piece.trim(), () => phones);
   }))).join('');
   const ids = [config.blank];
-  for (const symbol of ipa) ids.push(config.symbols[symbol] ?? config.unknown, config.blank);
+  const symbols: (string | null)[] = [null];
+  for (const symbol of ipa) {
+    ids.push(config.symbols[symbol] ?? config.unknown, config.blank);
+    symbols.push(symbol, null);
+  }
   if (ids.length < 3) throw new Error('Enter a few words to speak.');
   if (ids.length > 240) throw new Error('Use a shorter phrase for the preview.');
-  return new Tensor('int64', BigInt64Array.from(ids, BigInt), [1, ids.length]);
+  return { tokens: new Tensor('int64', BigInt64Array.from(ids, BigInt), [1, ids.length]), symbols };
 }
 
 function seededNoise(length: number) {
@@ -77,7 +84,7 @@ function repeatRows(values: Float32Array, width: number, durations: number[], fr
   return new Tensor('float32', repeated, [1, frames, width]);
 }
 
-function wav(samples: Float32Array, sampleRate: number) {
+export function wav(samples: Float32Array, sampleRate: number) {
   let peak = 0;
   for (const sample of samples) {
     if (!Number.isFinite(sample)) throw new Error('The checkpoint produced invalid audio.');
@@ -106,10 +113,12 @@ function wav(samples: Float32Array, sampleRate: number) {
   return new Blob([bytes], { type: 'audio/wav' });
 }
 
-export async function synthesize(id: string, text: string, onReady: () => void) {
+/** One phrase -> raw samples plus mouth cues (seconds from the phrase start). */
+async function render(id: string, text: string, onReady?: () => void) {
   const { config, sessions: [encoder, decoder, vocoder] } = await load(id);
-  onReady();
-  const encoded = await encoder.run({ tokens: await tokenize(text, config) });
+  onReady?.();
+  const { tokens, symbols } = await tokenize(text, config);
+  const encoded = await encoder.run({ tokens });
   const durations = Array.from(encoded.duration.data as Float32Array, value => Math.max(1, Math.ceil(Math.exp(value))));
   const frames = durations.reduce((sum, n) => sum + n, 0);
   if (!Number.isFinite(frames) || frames > 600) throw new Error('The predicted audio is too long. Try fewer words.');
@@ -130,5 +139,56 @@ export async function synthesize(id: string, text: string, onReady: () => void) 
     for (let t = 0; t < frames; t++) mel[c * frames + t] = noise[t * bins + c] * config.melStd[c] + config.melMean[c];
   }
   const { wave } = await vocoder.run({ mel: new Tensor('float32', mel, [1, bins, frames]) });
-  return wav(wave.data as Float32Array, config.sampleRate);
+  const samples = wave.data as Float32Array;
+  const secondsPerFrame = samples.length / frames / config.sampleRate;
+  return { samples, sampleRate: config.sampleRate, cues: cuesFromDurations(symbols, durations, secondsPerFrame) };
+}
+
+export async function synthesize(id: string, text: string, onReady: () => void) {
+  const { samples, sampleRate } = await render(id, text, onReady);
+  return wav(samples, sampleRate);
+}
+
+/** Any length of text -> one WAV with mouth cues, phrase by phrase. */
+export async function speak(id: string, text: string, onProgress: (done: number, total: number) => void) {
+  const parts = phrases(text);
+  if (!parts.length) throw new Error('Enter a few words to speak.');
+  const chunks: Float32Array[] = [];
+  const cues: MouthCue[] = [];
+  let sampleRate = 22050;
+  let length = 0;
+  for (const [index, part] of parts.entries()) {
+    onProgress(index, parts.length);
+    const rendered = await render(id, part.text);
+    sampleRate = rendered.sampleRate;
+    const start = length / sampleRate;
+    for (const cue of rendered.cues) cues.push({ ...cue, start: cue.start + start, end: cue.end + start });
+    const pause = new Float32Array(Math.round(part.pause * sampleRate));
+    chunks.push(rendered.samples, pause);
+    length += rendered.samples.length + pause.length;
+    const end = length / sampleRate;
+    cues.push({ start: end - part.pause, end, value: 'X' });
+  }
+  onProgress(parts.length, parts.length);
+  const samples = new Float32Array(length);
+  let offset = 0;
+  for (const chunk of chunks) { samples.set(chunk, offset); offset += chunk.length; }
+  return { audio: wav(samples, sampleRate), cues, duration: length / sampleRate };
+}
+
+export type Voice = { id: string; acousticStep: number; vocoderStep: number };
+
+/** Every exported local checkpoint pair, newest training first (development only). */
+export async function localVoices(signal?: AbortSignal): Promise<Voice[]> {
+  const response = await fetch('/training-files/index.json', { signal, cache: 'no-store' });
+  if (!response.ok) throw new Error('Preview unavailable');
+  const rows: { id: string }[] = await response.json();
+  const voices = await Promise.all(rows.map(async row => {
+    const model = await fetch(`/training-files/${encodeURIComponent(row.id)}/model/model.json`, { signal, cache: 'no-store' });
+    if (!model.ok) return null;
+    const { acousticStep, vocoderStep } = await model.json() as Voice;
+    return { id: row.id, acousticStep, vocoderStep };
+  }));
+  return voices.filter(voice => voice !== null)
+    .sort((a, b) => b.acousticStep - a.acousticStep || b.vocoderStep - a.vocoderStep);
 }

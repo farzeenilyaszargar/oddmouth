@@ -1,15 +1,19 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Mouth from './mouth';
 import SpeakingMouth from './speaking-mouth';
 import animation from '../demo/lip-sync.json';
 import AudioOptions from './audio-options';
 import { DEFAULT_AUDIO } from './lib/audio-effects';
 import { useEditedAudio } from './use-edited-audio';
+import type { MouthCue } from './lib/lip-sync';
+import type { Voice } from './training/synthesize';
 
 const SAMPLE = animation.transcript;
-const clock = (seconds: number) => `0:${Math.floor(seconds).toString().padStart(2, '0')}`;
+const SAMPLE_URL = '/audio/oddmouth-demo.wav';
+type Speech = { url: string; cues: MouthCue[]; duration: number };
+const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60).toString().padStart(2, '0')}`;
 
 
 export default function Home() {
@@ -23,7 +27,24 @@ export default function Home() {
   const [error, setError] = useState('');
   const [more, setMore] = useState(false);
   const [settings, setSettings] = useState(DEFAULT_AUDIO);
-  const editedAudio = useEditedAudio(audio, settings, setError);
+  const [voice, setVoice] = useState<Voice | null>(null);
+  const [speech, setSpeech] = useState<Speech | null>(null);
+  const [generating, setGenerating] = useState('');
+  const editedAudio = useEditedAudio(audio, speech?.url ?? SAMPLE_URL, settings, setError);
+  const cues = speech?.cues ?? animation.mouthCues;
+
+  // On the local development site, speak with the newest exported checkpoint.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return;
+    const controller = new AbortController();
+    import('./training/synthesize')
+      .then(({ localVoices }) => localVoices(controller.signal))
+      .then(voices => setVoice(voices[0] ?? null))
+      .catch(() => { /* no local checkpoints: keep the bundled sample */ });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => () => { if (speech) URL.revokeObjectURL(speech.url); }, [speech]);
 
   async function playPause() {
     const player = audio.current;
@@ -43,6 +64,26 @@ export default function Home() {
     catch { setError('Couldn’t play the sample. Try downloading it instead.'); }
   }
 
+  async function generate() {
+    if (!voice) { await generateDemo(); return; }
+    if (generating || !text.trim()) return;
+    audio.current?.pause();
+    setError('');
+    setGenerating('Loading the voice…');
+    try {
+      const { speak } = await import('./training/synthesize');
+      const result = await speak(voice.id, text, (done, total) =>
+        setGenerating(total > 1 ? `Generating phrase ${Math.min(done + 1, total)} of ${total}…` : 'Generating…'));
+      setTime(0);
+      setDuration(result.duration);
+      setSpeech({ url: URL.createObjectURL(result.audio), cues: result.cues, duration: result.duration });
+    } catch (problem) {
+      setError(problem instanceof Error ? problem.message : 'Couldn’t generate audio.');
+    } finally {
+      setGenerating('');
+    }
+  }
+
 
   return (
     <div className="site">
@@ -55,14 +96,14 @@ export default function Home() {
         <div className="workspace">
           <div className="hero"><div className="intro"><h1>Free text to speech<span>for stories, scripts, and everyday ideas.</span></h1></div>
           <div className={`character ${playing ? 'speaking' : ''}`}>
-            <SpeakingMouth audio={audio} playing={playing} time={time} duration={duration} editing={editing} sourceRate={editedAudio.speed} /><Mouth className="still-mouth" />
+            <SpeakingMouth audio={audio} cues={cues} playing={playing} time={time} duration={duration} editing={editing} sourceRate={editedAudio.speed} /><Mouth className="still-mouth" />
           </div></div>
 
           <section className="studio" aria-label="Text to speech">
             <div className="editor">
               <div className="editor-top"><label htmlFor="words">Your text</label></div>
               <textarea onFocus={() => setEditing(true)} onBlur={() => setEditing(false)} id="words" value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder="Give me something to say." spellCheck={false} />
-              <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><button className="generate-button" onClick={generateDemo} disabled={!text.trim() || editedAudio.processing} aria-describedby="demo-note"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M3 8v4m5-8v12m5-10v8m4-6v4" /></svg>Generate</button></div>
+              <div className="editor-bottom"><span>{text.length.toLocaleString()} / 1,000</span><button className="generate-button" onClick={generate} disabled={!text.trim() || editedAudio.processing || Boolean(generating)} aria-describedby="demo-note"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M3 8v4m5-8v12m5-10v8m4-6v4" /></svg>{generating ? 'Working…' : 'Generate'}</button></div>
             </div>
             <div className="player">
               <button className="play" onClick={playPause} aria-label={playing ? 'Pause audio' : 'Play audio'}>
@@ -73,9 +114,11 @@ export default function Home() {
             </div>
             <div className="more-row"><button className="more-button" aria-expanded={more} aria-controls="audio-options" onClick={() => setMore(!more)}>More<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg></button></div>
             {more && <AudioOptions settings={settings} onChange={setSettings} />}
-            <audio ref={audio} src={editedAudio.url} preload="metadata" onPlay={() => setPlaying(true)} onPause={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onEnded={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onTimeUpdate={event => setTime(event.currentTarget.currentTime)} onLoadedMetadata={event => { if (Number.isFinite(event.currentTarget.duration)) setDuration(event.currentTarget.duration); void editedAudio.loaded(event.currentTarget); }} onError={() => setError('The sample couldn’t load. Please refresh and try again.')} />
+            <audio ref={audio} src={editedAudio.url} preload="metadata" onPlay={() => setPlaying(true)} onPause={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onEnded={event => { setPlaying(false); setTime(event.currentTarget.currentTime); }} onTimeUpdate={event => setTime(event.currentTarget.currentTime)} onLoadedMetadata={event => { if (Number.isFinite(event.currentTarget.duration)) setDuration(event.currentTarget.duration); void editedAudio.loaded(event.currentTarget); }} onError={() => setError(speech ? 'The generated audio couldn’t play. Try generating again.' : 'The sample couldn’t load. Please refresh and try again.')} />
           </section>
-          <p id="demo-note" className="demo-note" role="status">{error || (editedAudio.processing ? 'Applying audio settings...' : 'Plays a sample until custom generation is ready.')}</p>
+          <p id="demo-note" className="demo-note" role="status">{error || generating || (editedAudio.processing ? 'Applying audio settings...' : voice
+              ? `Speaking with the local checkpoint: acoustic ${voice.acousticStep.toLocaleString()} · vocoder ${voice.vocoderStep.toLocaleString()} steps. Still training, so expect rough audio.`
+              : 'Plays a sample until custom generation is ready.')}</p>
         </div>
       </main>
 
@@ -84,7 +127,7 @@ export default function Home() {
         <h2 id="about-title">About Oddmouth</h2>
         <p>Oddmouth is a free, open-source text-to-speech project. The goal is to generate speech directly in this website, using your device instead of an inference server.</p>
         <p>After the model downloads, the aim is to let you generate speech offline, keep your text on your device, and avoid API keys, accounts, and character quotas.</p>
-        <p>In-browser generation is still in development. This page currently plays a prerecorded sample with speech-synced mouth animation.</p>
+        <p>In-browser generation is still in development. The public page plays a prerecorded sample; the local development site speaks with the newest training checkpoint, and the mouth follows the model's own timing for each sound.</p>
         <p className="maker">Made by <a href="https://twitter.com/farilyaz" target="_blank" rel="noreferrer">@farilyaz</a>.</p>
         <a href="https://github.com/farzeenilyaszargar/oddmouth" target="_blank" rel="noreferrer">Source code on GitHub</a>
       </dialog>

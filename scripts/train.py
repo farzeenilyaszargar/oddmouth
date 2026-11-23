@@ -82,6 +82,18 @@ def memory(device):
     return None
 
 
+def host_memory_mb():
+    """This process's resident memory and the machine's available memory, in MB (Linux only)."""
+    try:
+        status = Path('/proc/self/status').read_text()
+        rss = int(next(line for line in status.splitlines() if line.startswith('VmRSS:')).split()[1])
+        info = Path('/proc/meminfo').read_text()
+        available = int(next(line for line in info.splitlines() if line.startswith('MemAvailable:')).split()[1])
+        return {'host_rss_mb': rss // 1024, 'host_available_mb': available // 1024}
+    except (OSError, StopIteration, ValueError):
+        return {}
+
+
 def discriminator_loss(real, fake):
     return sum((r[0] - 1).square().mean() + f[0].square().mean() for r, f in zip(real, fake)) / len(real)
 
@@ -349,7 +361,7 @@ def main():
                 row = {'step': step, 'epoch': epoch, **{k: v / updates for k, v in totals.items()},
                        'grad_norm': float(grad), 'lr': scheduler.get_last_lr()[0],
                        'seconds_per_step': (time.monotonic() - last_log) / updates,
-                       'mps_bytes': memory(device)}
+                       'mps_bytes': memory(device), **host_memory_mb()}
                 last_log = time.monotonic()
                 logged_from_step = step
                 totals = {}

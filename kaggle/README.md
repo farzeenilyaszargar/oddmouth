@@ -1,6 +1,6 @@
 # Training on Kaggle
 
-[`oddmouth-train.ipynb`](oddmouth-train.ipynb) trains both models on a free Kaggle GPU. Kaggle currently offers about 30 GPU hours a week, with sessions of up to 12 hours.
+[`oddmouth-train.ipynb`](oddmouth-train.ipynb) trains both models on a free Kaggle GPU. Kaggle currently offers about 30 GPU hours a week, with sessions of up to 12 hours. Kaggle keeps a version's output only if it finishes, so the notebook trains for 4 hours per version; chain versions to train longer.
 
 ## One-time setup
 
@@ -28,4 +28,5 @@ To listen locally, put the downloaded files in `runs/acoustic/` and `runs/vocode
 ## Notes
 
 - The notebook trains the acoustic model and the vocoder in parallel, one per GPU when two are available. Batches are larger than on a Mac (`training.cuda` in `configs/oddmouth.json`).
+- Log lines include `host_rss_mb` and `host_available_mb` (Linux), to diagnose a run that stops without an error.
 - Keep notebooks, datasets and outputs **private**. DailyTalk is not cleared for commercial use. Do not upload audio whose training rights are unclear.

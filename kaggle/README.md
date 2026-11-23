@@ -1,6 +1,6 @@
 # Training on Kaggle
 
-[`oddmouth-train.ipynb`](oddmouth-train.ipynb) trains both models on a free Kaggle GPU. Kaggle currently offers about 30 GPU hours a week, with sessions of up to 12 hours. Kaggle keeps a version's output only if it finishes, so the notebook trains for 4 hours per version; chain versions to train longer.
+[`oddmouth-train.ipynb`](oddmouth-train.ipynb) trains both models on a free Kaggle GPU. Kaggle currently offers about 30 GPU hours a week, with sessions of up to 12 hours. Kaggle keeps a version's output only if it finishes, so set up the backup below to keep checkpoints from a session that is stopped.
 
 ## One-time setup
 
@@ -12,6 +12,7 @@
    ```
 
    Then go to **Datasets → New Dataset**, upload the zip, set it to **Private**, and create it.
+3. Recommended, so a stopped session loses at most 30 minutes: create a free Hugging Face account and a token with **write** access (**Settings → Access Tokens**). In the notebook editor, open **Add-ons → Secrets**, add it with the label `HF_TOKEN`, and tick it for this notebook. The runner then copies both checkpoints every 30 minutes to a **private** model repository `oddmouth-checkpoints` in your account, and each new session resumes from it if it holds more steps than the attached input.
 
 ## Each training session
 

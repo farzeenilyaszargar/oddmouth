@@ -49,7 +49,7 @@ To run both stages in consecutive parts, use `uv run --extra browser python scri
 
 ## Training on a cloud GPU
 
-`scripts/train_cloud.py` trains both stages in parallel on CUDA, with larger batches (`training.cuda` in the config). [`kaggle/`](../kaggle/README.md) has a ready-to-run notebook for Kaggle's free GPUs. CUDA support has not been benchmarked yet.
+`scripts/train_cloud.py` trains both stages in parallel on CUDA, with larger batches (`training.cuda` in the config). [`kaggle/`](../kaggle/README.md) has a ready-to-run notebook for Kaggle's free GPUs. On Kaggle's GPU T4 x2 the acoustic model ran at about 0.24 s/step and the vocoder at about 0.16 s/step. With `HF_TOKEN` set, checkpoints are also backed up every 30 minutes to a private Hugging Face repository, and the next session resumes from it.
 
 ## Generating speech
 
